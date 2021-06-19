@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="address">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="member_id" Type="int4" />
+    <Property Name="address1" Type="varchar" MaxLength="100" />
+    <Property Name="address2" Type="varchar" MaxLength="100" />
+    <Property Name="address3" Type="varchar" MaxLength="100" />
+    <Property Name="city" Type="varchar" MaxLength="100" />
+    <Property Name="province" Type="varchar" MaxLength="100" />
+    <Property Name="country_id" Type="int4" />
+    <Property Name="zipcode" Type="varchar" MaxLength="10" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+    <Property Name="is_cancel" Type="bool" />
+  </EntityType>
+  <EntityType Name="associate_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="associateType" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="branch">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="branchName" Type="varchar" MaxLength="100" />
+    <Property Name="code" Type="varchar" MaxLength="10" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="card">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="member_id" Type="int4" />
+    <Property Name="cardNo" Type="varchar" MaxLength="50" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+    <Property Name="is_cancel" Type="bool" />
+  </EntityType>
+  <EntityType Name="civil_status">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="civilStatus" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="country">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="countryName" Type="varchar" MaxLength="100" />
+    <Property Name="code" Type="varchar" MaxLength="10" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="dcs_system_setting">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" Nullable="false" />
+    <Property Name="cif_length" Type="int4" />
+    <Property Name="member_type_assoc_allow_yrs" Type="int4" />
+    <Property Name="member_type_reg_allow_yrs" Type="int4" />
+    <Property Name="cardname_length" Type="int4" />
+  </EntityType>
+  <EntityType Name="member">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="cif" Type="varchar" MaxLength="20" />
+    <Property Name="last_name" Type="varchar" MaxLength="50" />
+    <Property Name="first_name" Type="varchar" MaxLength="50" />
+    <Property Name="middle_name" Type="varchar" MaxLength="50" />
+    <Property Name="suffix" Type="varchar" MaxLength="10" />
+    <Property Name="gender" Type="varchar" MaxLength="10" />
+    <Property Name="date_birth" Type="date" />
+    <Property Name="civil_status_id" Type="int4" />
+    <Property Name="membership_type_id" Type="int4" />
+    <Property Name="membership_status_id" Type="int4" />
+    <Property Name="membership_date" Type="date" />
+    <Property Name="contact_nos" Type="varchar" MaxLength="50" />
+    <Property Name="mobile_nos" Type="varchar" MaxLength="50" />
+    <Property Name="emergency_contact_name" Type="varchar" MaxLength="200" />
+    <Property Name="emergency_contact_nos" Type="varchar" MaxLength="50" />
+    <Property Name="principal_associate_type_id" Type="int4" />
+    <Property Name="principal_cif" Type="varchar" MaxLength="20" />
+    <Property Name="principal_name" Type="varchar" MaxLength="200" />
+    <Property Name="cca_no" Type="varchar" MaxLength="50" />
+    <Property Name="user_id" Type="int4" />
+    <Property Name="terminal_id" Type="varchar" MaxLength="50" />
+    <Property Name="branch_id" Type="int4" />
+    <Property Name="online_reference_number" Type="varchar" MaxLength="20" />
+    <Property Name="card_name" Type="varchar" MaxLength="50" />
+    <Property Name="email" Type="varchar" MaxLength="100" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+    <Property Name="is_cancel" Type="bool" />
+  </EntityType>
+  <EntityType Name="membership_status">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="membershipStatus" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="membership_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="membershipType" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="online_registration">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="cif" Type="varchar" MaxLength="20" />
+    <Property Name="last_name" Type="varchar" MaxLength="50" />
+    <Property Name="first_name" Type="varchar" MaxLength="50" />
+    <Property Name="middle_name" Type="varchar" MaxLength="50" />
+    <Property Name="suffix" Type="varchar" MaxLength="10" />
+    <Property Name="gender" Type="varchar" MaxLength="10" />
+    <Property Name="date_birth" Type="date" />
+    <Property Name="mobile_nos" Type="varchar" MaxLength="50" />
+    <Property Name="email" Type="varchar" MaxLength="100" />
+    <Property Name="cca_no" Type="varchar" MaxLength="50" />
+    <Property Name="reference_number" Type="varchar" MaxLength="20" />
+    <Property Name="qr_code" Type="varchar" MaxLength="100" />
+    <Property Name="date_schedule" Type="date" />
+    <Property Name="time_schedule" Type="time" Precision="6" />
+    <Property Name="date_captured" Type="date" />
+    <Property Name="reference_id" Type="int4" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+  </EntityType>
+  <EntityType Name="print_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="printType" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="recard_reason">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="recardReason" Type="varchar" MaxLength="50" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="system_log">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="system" Type="varchar" MaxLength="10" />
+    <Property Name="log_desc" Type="varchar" MaxLength="2000" />
+    <Property Name="log_type" Type="varchar" MaxLength="10" />
+    <Property Name="user_id" Type="int4" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+  </EntityType>
+  <EntityType Name="system_role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="role" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
+  </EntityType>
+  <EntityType Name="system_user">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="user_name" Type="varchar" MaxLength="50" />
+    <Property Name="user_pass" Type="varchar" MaxLength="500" />
+    <Property Name="last_name" Type="varchar" MaxLength="50" />
+    <Property Name="first_name" Type="varchar" MaxLength="50" />
+    <Property Name="middle_name" Type="varchar" MaxLength="50" />
+    <Property Name="suffix" Type="varchar" MaxLength="10" />
+    <Property Name="role_id" Type="int4" />
+    <Property Name="status" Type="varchar" MaxLength="20" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+  </EntityType>
+  <EntityContainer Name="afpslai_emvModelStoreContainer">
+    <EntitySet Name="address" EntityType="Self.address" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="associate_type" EntityType="Self.associate_type" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="branch" EntityType="Self.branch" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="card" EntityType="Self.card" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="civil_status" EntityType="Self.civil_status" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="country" EntityType="Self.country" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="dcs_system_setting" EntityType="Self.dcs_system_setting" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="member" EntityType="Self.member" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="membership_status" EntityType="Self.membership_status" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="membership_type" EntityType="Self.membership_type" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="online_registration" EntityType="Self.online_registration" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="print_type" EntityType="Self.print_type" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="recard_reason" EntityType="Self.recard_reason" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="system_log" EntityType="Self.system_log" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

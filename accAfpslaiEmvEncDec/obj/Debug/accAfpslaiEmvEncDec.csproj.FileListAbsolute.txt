@@ -1,0 +1,9 @@
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.dll
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.pdb
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.dll
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.xml
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csprojAssemblyReference.cache
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CoreCompileInputs.cache
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CopyComplete
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.dll
+D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.pdb

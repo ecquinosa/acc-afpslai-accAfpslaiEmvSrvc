@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="afpslai_emvModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="address">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="member_id" Type="Int32" />
+    <Property Name="address1" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="address2" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="address3" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="city" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="province" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="country_id" Type="Int32" />
+    <Property Name="zipcode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="is_cancel" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="associate_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="associateType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="branch">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="branchName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="card">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="member_id" Type="Int32" />
+    <Property Name="cardNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="is_cancel" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="civil_status">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="civilStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="country">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="countryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="dcs_system_setting">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="cif_length" Type="Int32" />
+    <Property Name="member_type_assoc_allow_yrs" Type="Int32" />
+    <Property Name="member_type_reg_allow_yrs" Type="Int32" />
+    <Property Name="cardname_length" Type="Int32" />
+  </EntityType>
+  <EntityType Name="member">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cif" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="last_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="first_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="middle_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="gender" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="date_birth" Type="DateTime" Precision="0" />
+    <Property Name="civil_status_id" Type="Int32" />
+    <Property Name="membership_type_id" Type="Int32" />
+    <Property Name="membership_status_id" Type="Int32" />
+    <Property Name="membership_date" Type="DateTime" Precision="0" />
+    <Property Name="contact_nos" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="mobile_nos" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="emergency_contact_name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="emergency_contact_nos" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="principal_associate_type_id" Type="Int32" />
+    <Property Name="principal_cif" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="principal_name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="cca_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="user_id" Type="Int32" />
+    <Property Name="terminal_id" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="branch_id" Type="Int32" />
+    <Property Name="online_reference_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="card_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="is_cancel" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="membership_status">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="membershipStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="membership_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="membershipType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="online_registration">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cif" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="last_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="first_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="middle_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="gender" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="date_birth" Type="DateTime" Precision="0" />
+    <Property Name="mobile_nos" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="cca_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="reference_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="qr_code" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="date_schedule" Type="DateTime" Precision="0" />
+    <Property Name="time_schedule" Type="Time" Precision="6" />
+    <Property Name="date_captured" Type="DateTime" Precision="0" />
+    <Property Name="reference_id" Type="Int32" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+  </EntityType>
+  <EntityType Name="print_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="printType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="recard_reason">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="recardReason" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="system_log">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="system" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="log_desc" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+    <Property Name="log_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="user_id" Type="Int32" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+  </EntityType>
+  <EntityType Name="system_role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="system_user">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="user_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="user_pass" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="last_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="first_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="middle_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="role_id" Type="Int32" />
+    <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+  </EntityType>
+  <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="addresses" EntityType="Self.address" />
+    <EntitySet Name="associate_type" EntityType="Self.associate_type" />
+    <EntitySet Name="branches" EntityType="Self.branch" />
+    <EntitySet Name="cards" EntityType="Self.card" />
+    <EntitySet Name="civil_status" EntityType="Self.civil_status" />
+    <EntitySet Name="countries" EntityType="Self.country" />
+    <EntitySet Name="dcs_system_setting" EntityType="Self.dcs_system_setting" />
+    <EntitySet Name="members" EntityType="Self.member" />
+    <EntitySet Name="membership_status" EntityType="Self.membership_status" />
+    <EntitySet Name="membership_type" EntityType="Self.membership_type" />
+    <EntitySet Name="online_registration" EntityType="Self.online_registration" />
+    <EntitySet Name="print_type" EntityType="Self.print_type" />
+    <EntitySet Name="recard_reason" EntityType="Self.recard_reason" />
+    <EntitySet Name="system_log" EntityType="Self.system_log" />
+    <EntitySet Name="system_role" EntityType="Self.system_role" />
+    <EntitySet Name="system_user" EntityType="Self.system_user" />
+  </EntityContainer>
+</Schema>

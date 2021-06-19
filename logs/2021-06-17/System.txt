@@ -1,0 +1,23 @@
+2021-06-17 16:37:14.5027|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|Error decrypting: Value cannot be null.
+Parameter name: s
+2021-06-17 16:40:43.0753|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|Error decrypting: Value cannot be null.
+Parameter name: s
+2021-06-17 16:40:43.9854|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|Error decrypting: Value cannot be null.
+Parameter name: s
+2021-06-17 16:53:51.8333|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.Models.user>(string)' has some invalid arguments
+2021-06-17 17:03:04.0008|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.Models.loginRequest>(string)' has some invalid arguments
+2021-06-17 17:12:52.4203|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CancelCapture|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.Models.cancelCapture>(string)' has some invalid arguments
+2021-06-17 17:17:29.3194|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CancelCapture|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.Models.cancelCapture>(string)' has some invalid arguments
+2021-06-17 17:20:38.5471|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CancelCapture|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.Models.cancelCapture>(string)' has some invalid arguments
+2021-06-17 17:42:11.0965|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CheckMemberIfCaptured|DbComparisonExpression requires arguments with comparable types.
+2021-06-17 17:44:35.9767|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CheckMemberIfCaptured|Sequence contains more than one element
+2021-06-17 17:46:05.4233|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CheckMemberIfCaptured|Sequence contains more than one element
+2021-06-17 17:47:22.7984|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CheckMemberIfCaptured|Sequence contains more than one element
+2021-06-17 18:18:24.7284|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddDCSSystemSettings|The best overloaded method match for 'Newtonsoft.Json.JsonConvert.DeserializeObject<accAfpslaiEmvSrvc.dcs_system_setting>(string)' has some invalid arguments
+2021-06-17 18:27:05.5868|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddDCSSystemSettings|The property 'cif_length' is part of the object's key information and cannot be modified. 
+2021-06-17 18:34:29.7114|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.
+2021-06-17 18:34:38.9192|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.
+2021-06-17 18:34:56.3267|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.
+2021-06-17 18:36:54.6024|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.
+2021-06-17 18:38:08.5889|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.
+2021-06-17 18:46:49.4591|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while preparing the command definition. See the inner exception for details.

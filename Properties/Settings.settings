@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="accAfpslaiEmvSrvc.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="PhotoRepo" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\PHOTO</Value>
+    </Setting>
+    <Setting Name="MemberDataRepo" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\MEMBER</Value>
+    </Setting>
+    <Setting Name="CBS_CardNo_Req" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ApiAuth" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">gR3@aTDaEm0n!</Value>
+    </Setting>
+    <Setting Name="LogRepo" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\LOGS</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
