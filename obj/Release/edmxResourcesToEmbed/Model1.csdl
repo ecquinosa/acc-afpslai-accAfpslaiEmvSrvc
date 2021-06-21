@@ -71,6 +71,7 @@
     <Property Name="member_type_assoc_allow_yrs" Type="Int32" />
     <Property Name="member_type_reg_allow_yrs" Type="Int32" />
     <Property Name="cardname_length" Type="Int32" />
+    <Property Name="last_updated" Type="DateTime" Precision="6" />
   </EntityType>
   <EntityType Name="member">
     <Key>
@@ -105,6 +106,8 @@
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="is_cancel" Type="Boolean" />
+    <Property Name="print_type_id" Type="Int32" />
+    <Property Name="recard_reason_id" Type="Int32" />
   </EntityType>
   <EntityType Name="membership_status">
     <Key>
@@ -215,5 +218,24 @@
     <EntitySet Name="system_log" EntityType="Self.system_log" />
     <EntitySet Name="system_role" EntityType="Self.system_role" />
     <EntitySet Name="system_user" EntityType="Self.system_user" />
+    <EntitySet Name="cps_card_elements" EntityType="afpslai_emvModel.cps_card_elements" />
   </EntityContainer>
+  <EntityType Name="cps_card_elements">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="element" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="x" Type="Int32" />
+    <Property Name="y" Type="Int32" />
+    <Property Name="width" Type="Int32" />
+    <Property Name="height" Type="Int32" />
+    <Property Name="font_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="font_size" Type="Int32" />
+    <Property Name="font_style" Type="Int32" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="last_updated" Type="DateTime" Precision="6" />
+    <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+  </EntityType>
 </Schema>

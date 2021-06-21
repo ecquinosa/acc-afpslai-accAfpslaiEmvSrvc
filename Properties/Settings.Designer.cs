@@ -67,5 +67,14 @@ namespace accAfpslaiEmvSrvc.Properties {
                 return ((string)(this["LogRepo"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://wisecard.allcardtech.com.ph/rest/card/cardBindCifNo")]
+        public string WiseCard_cardBindCifNo_Url {
+            get {
+                return ((string)(this["WiseCard_cardBindCifNo_Url"]));
+            }
+        }
     }
 }

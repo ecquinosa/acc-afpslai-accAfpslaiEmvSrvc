@@ -249,6 +249,9 @@
     <Compile Include="country.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="cps_card_elements.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="dcs_system_setting.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -281,6 +284,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\cmsRequest.cs" />
+    <Compile Include="Models\cmsResponse.cs" />
     <Compile Include="Models\memberImages.cs" />
     <Compile Include="Models\cbsCms.cs" />
     <Compile Include="Models\cancelCapture.cs" />

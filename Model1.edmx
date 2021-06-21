@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="address">
           <Key>
             <PropertyRef Name="id" />
@@ -67,15 +67,34 @@
           <Property Name="code" Type="varchar" MaxLength="10" />
           <Property Name="is_deleted" Type="bool" />
         </EntityType>
+        <EntityType Name="cps_card_elements">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="element" Type="varchar" MaxLength="30" />
+          <Property Name="x" Type="int4" />
+          <Property Name="y" Type="int4" />
+          <Property Name="width" Type="int4" />
+          <Property Name="height" Type="int4" />
+          <Property Name="font_name" Type="varchar" MaxLength="50" />
+          <Property Name="font_size" Type="int4" />
+          <Property Name="font_style" Type="int4" />
+          <Property Name="element_type" Type="varchar" MaxLength="10" />
+          <Property Name="date_post" Type="date" />
+          <Property Name="time_post" Type="time" Precision="6" />
+          <Property Name="last_updated" Type="timestamp" />
+        </EntityType>
         <EntityType Name="dcs_system_setting">
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="int4" Nullable="false" />
+          <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="cif_length" Type="int4" />
           <Property Name="member_type_assoc_allow_yrs" Type="int4" />
           <Property Name="member_type_reg_allow_yrs" Type="int4" />
           <Property Name="cardname_length" Type="int4" />
+          <Property Name="last_updated" Type="timestamp" />
         </EntityType>
         <EntityType Name="member">
           <Key>
@@ -107,6 +126,8 @@
           <Property Name="online_reference_number" Type="varchar" MaxLength="20" />
           <Property Name="card_name" Type="varchar" MaxLength="50" />
           <Property Name="email" Type="varchar" MaxLength="100" />
+          <Property Name="print_type_id" Type="int4" />
+          <Property Name="recard_reason_id" Type="int4" />
           <Property Name="date_post" Type="date" />
           <Property Name="time_post" Type="time" Precision="6" />
           <Property Name="is_cancel" Type="bool" />
@@ -210,6 +231,7 @@
           <EntitySet Name="card" EntityType="Self.card" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="civil_status" EntityType="Self.civil_status" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="country" EntityType="Self.country" Schema="afpslai_emv" store:Type="Tables" />
+          <EntitySet Name="cps_card_elements" EntityType="Self.cps_card_elements" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="dcs_system_setting" EntityType="Self.dcs_system_setting" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="member" EntityType="Self.member" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="membership_status" EntityType="Self.membership_status" Schema="afpslai_emv" store:Type="Tables" />
@@ -221,8 +243,7 @@
           <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="afpslai_emvModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -297,6 +318,7 @@
           <Property Name="member_type_assoc_allow_yrs" Type="Int32" />
           <Property Name="member_type_reg_allow_yrs" Type="Int32" />
           <Property Name="cardname_length" Type="Int32" />
+          <Property Name="last_updated" Type="DateTime" Precision="6" />
         </EntityType>
         <EntityType Name="member">
           <Key>
@@ -331,6 +353,8 @@
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
           <Property Name="is_cancel" Type="Boolean" />
+          <Property Name="print_type_id" Type="Int32" />
+          <Property Name="recard_reason_id" Type="Int32" />
         </EntityType>
         <EntityType Name="membership_status">
           <Key>
@@ -441,7 +465,26 @@
           <EntitySet Name="system_log" EntityType="Self.system_log" />
           <EntitySet Name="system_role" EntityType="Self.system_role" />
           <EntitySet Name="system_user" EntityType="Self.system_user" />
+          <EntitySet Name="cps_card_elements" EntityType="afpslai_emvModel.cps_card_elements" />
         </EntityContainer>
+        <EntityType Name="cps_card_elements">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="element" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="x" Type="Int32" />
+          <Property Name="y" Type="Int32" />
+          <Property Name="width" Type="Int32" />
+          <Property Name="height" Type="Int32" />
+          <Property Name="font_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="font_size" Type="Int32" />
+          <Property Name="font_style" Type="Int32" />
+          <Property Name="date_post" Type="DateTime" Precision="0" />
+          <Property Name="time_post" Type="Time" Precision="6" />
+          <Property Name="last_updated" Type="DateTime" Precision="6" />
+          <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -519,6 +562,7 @@
           <EntitySetMapping Name="dcs_system_setting">
             <EntityTypeMapping TypeName="afpslai_emvModel.dcs_system_setting">
               <MappingFragment StoreEntitySet="dcs_system_setting">
+                <ScalarProperty Name="last_updated" ColumnName="last_updated" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="cif_length" ColumnName="cif_length" />
                 <ScalarProperty Name="member_type_assoc_allow_yrs" ColumnName="member_type_assoc_allow_yrs" />
@@ -530,6 +574,8 @@
           <EntitySetMapping Name="members">
             <EntityTypeMapping TypeName="afpslai_emvModel.member">
               <MappingFragment StoreEntitySet="member">
+                <ScalarProperty Name="recard_reason_id" ColumnName="recard_reason_id" />
+                <ScalarProperty Name="print_type_id" ColumnName="print_type_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="cif" ColumnName="cif" />
                 <ScalarProperty Name="last_name" ColumnName="last_name" />
@@ -659,6 +705,25 @@
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="date_post" ColumnName="date_post" />
                 <ScalarProperty Name="time_post" ColumnName="time_post" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="cps_card_elements">
+            <EntityTypeMapping TypeName="afpslai_emvModel.cps_card_elements">
+              <MappingFragment StoreEntitySet="cps_card_elements">
+                <ScalarProperty Name="element_type" ColumnName="element_type" />
+                <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+                <ScalarProperty Name="time_post" ColumnName="time_post" />
+                <ScalarProperty Name="date_post" ColumnName="date_post" />
+                <ScalarProperty Name="font_style" ColumnName="font_style" />
+                <ScalarProperty Name="font_size" ColumnName="font_size" />
+                <ScalarProperty Name="font_name" ColumnName="font_name" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="y" ColumnName="y" />
+                <ScalarProperty Name="x" ColumnName="x" />
+                <ScalarProperty Name="element" ColumnName="element" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

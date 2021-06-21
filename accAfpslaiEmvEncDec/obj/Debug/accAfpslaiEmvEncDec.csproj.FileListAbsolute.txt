@@ -7,3 +7,12 @@ D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEn
 D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CopyComplete
 D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.dll
 D:\WORK\Projects\accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.pdb
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.dll
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.pdb
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.dll
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.xml
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.AssemblyReference.cache
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CoreCompileInputs.cache
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CopyComplete
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.dll
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.pdb

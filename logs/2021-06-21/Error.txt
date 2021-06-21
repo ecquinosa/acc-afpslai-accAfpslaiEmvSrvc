@@ -1,0 +1,7 @@
+2021-06-21 11:32:47.2074|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.CheckMemberIfCaptured|'accAfpslaiEmvSrvc.member' does not contain a definition for 'print_type_id'
+2021-06-21 16:26:01.0540|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. BadRequest 
+2021-06-21 16:48:25.1369|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. BadRequest 
+2021-06-21 17:19:46.3929|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. WebException : ProtocolError
+2021-06-21 17:23:41.8673|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. Card Status is invalid, cannot operate
+2021-06-21 17:32:02.1712|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. Card Status is invalid, cannot operate
+2021-06-21 17:32:10.3679|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Failed to bind cif 9505100003212 and card no 6389760026515624 to CMS. Card Status is invalid, cannot operate

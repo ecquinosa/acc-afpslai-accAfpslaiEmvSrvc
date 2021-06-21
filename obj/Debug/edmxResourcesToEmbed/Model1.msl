@@ -72,6 +72,7 @@
     <EntitySetMapping Name="dcs_system_setting">
       <EntityTypeMapping TypeName="afpslai_emvModel.dcs_system_setting">
         <MappingFragment StoreEntitySet="dcs_system_setting">
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="cif_length" ColumnName="cif_length" />
           <ScalarProperty Name="member_type_assoc_allow_yrs" ColumnName="member_type_assoc_allow_yrs" />
@@ -83,6 +84,8 @@
     <EntitySetMapping Name="members">
       <EntityTypeMapping TypeName="afpslai_emvModel.member">
         <MappingFragment StoreEntitySet="member">
+          <ScalarProperty Name="recard_reason_id" ColumnName="recard_reason_id" />
+          <ScalarProperty Name="print_type_id" ColumnName="print_type_id" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="cif" ColumnName="cif" />
           <ScalarProperty Name="last_name" ColumnName="last_name" />
@@ -212,6 +215,25 @@
           <ScalarProperty Name="status" ColumnName="status" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="cps_card_elements">
+      <EntityTypeMapping TypeName="afpslai_emvModel.cps_card_elements">
+        <MappingFragment StoreEntitySet="cps_card_elements">
+          <ScalarProperty Name="element_type" ColumnName="element_type" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+          <ScalarProperty Name="time_post" ColumnName="time_post" />
+          <ScalarProperty Name="date_post" ColumnName="date_post" />
+          <ScalarProperty Name="font_style" ColumnName="font_style" />
+          <ScalarProperty Name="font_size" ColumnName="font_size" />
+          <ScalarProperty Name="font_name" ColumnName="font_name" />
+          <ScalarProperty Name="height" ColumnName="height" />
+          <ScalarProperty Name="width" ColumnName="width" />
+          <ScalarProperty Name="y" ColumnName="y" />
+          <ScalarProperty Name="x" ColumnName="x" />
+          <ScalarProperty Name="element" ColumnName="element" />
+          <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
