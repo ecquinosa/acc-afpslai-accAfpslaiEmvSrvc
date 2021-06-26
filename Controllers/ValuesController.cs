@@ -93,15 +93,195 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
                         {
                             Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
-                            return apiResponse(new responseSuccess());                            
+                            return apiResponse(new responseSuccess());
                         }
                         else
                         {
+                            afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                            api_request_log arl = new api_request_log();
+                            arl.card_id = cbsCms.cardId;
+                            arl.request = payload;
+                            arl.response = msg;
+                            arl.date_post = DateTime.Now.Date;
+                            arl.time_post = DateTime.Now.TimeOfDay;
+                            arl.is_success = false;
+                            ent.api_request_log.Add(arl);
+                            ent.SaveChanges();
+
                             Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
                             return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
                         }
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/pullCBSData")]
+        [HttpPost]
+        public IHttpActionResult PullCBSData(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        string cif = "";
+
+                        if (objPayload.cif != null) cif = objPayload.cif;
+
+                        if (string.IsNullOrEmpty(cif)) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
+                        else
+                        {
+                            string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\", "") + @"\cbs.txt");
+                            string selectedLine = "";
+                            foreach (var line in lines)
+                            {
+                                if (line.Trim() != "")
+                                {
+                                    if (line.Split('|')[0] == cif)
+                                    {
+                                        selectedLine = line;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            cbsData memberCBS = new cbsData();
+                            if (selectedLine != "")
+                            {
+                                string[] selLineArr = selectedLine.Split('|');
+
+                                if (lines != null)
+                                {
+                                    memberCBS.cif = selLineArr[0];
+                                    memberCBS.first_name = selLineArr[1];
+                                    memberCBS.middle_name = selLineArr[2];
+                                    memberCBS.last_name = selLineArr[3];
+                                    memberCBS.suffix = selLineArr[4];
+                                    memberCBS.gender = selLineArr[5];
+                                    memberCBS.civilStatus = selLineArr[6];
+                                    memberCBS.membership_date = Convert.ToDateTime(selLineArr[7]);
+                                    memberCBS.membershipStatus = selLineArr[8];
+                                    memberCBS.membershipType = selLineArr[9];
+                                    memberCBS.date_birth = Convert.ToDateTime(selLineArr[10]);
+                                    memberCBS.contact_nos = selLineArr[11];
+                                    memberCBS.mobile_nos = selLineArr[12];
+                                    memberCBS.address1 = selLineArr[13];
+                                    memberCBS.address2 = selLineArr[14];
+                                    memberCBS.address3 = selLineArr[15];
+                                    memberCBS.city = selLineArr[16];
+                                    memberCBS.province = selLineArr[17];
+                                    memberCBS.zipCode = selLineArr[18];
+                                    memberCBS.emergency_contact_name = selLineArr[19];
+                                    memberCBS.emergency_contact_nos = selLineArr[20];
+                                    memberCBS.associateType = selLineArr[21];
+                                    memberCBS.principal_cif = selLineArr[22];
+                                    memberCBS.principal_name = selLineArr[23];
+                                    memberCBS.cca_no = selLineArr[24];
+
+                                    return apiResponse(new response { result = 0, obj = memberCBS });
+                                }
+                            }
+
+                            return apiResponse(new response { result = 0, obj = memberCBS });
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/pullCBSData2")]
+        [HttpPost]
+        public IHttpActionResult PullCBSData2(searchParam objPayload)
+        {
+            try
+            {
+
+                //dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                string cif = "";
+
+                if (objPayload.value != null) cif = objPayload.value;
+
+                if (string.IsNullOrEmpty(cif)) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
+                else
+                {
+                    string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\","") + @"\cbs.txt");
+                    string selectedLine = "";
+                    foreach (var line in lines)
+                    {
+                        if (line.Trim() != "")
+                        {
+                            if (line.Split('|')[0] == cif)
+                            {
+                                selectedLine = line;
+                                break;
+                            }
+                        }
+                    }
+
+                    cbsData memberCBS = new cbsData();
+                    if (selectedLine != "")
+                    {
+                        string[] selLineArr = selectedLine.Split('|');
+
+                        if (lines != null)
+                        {
+                            memberCBS.cif = selLineArr[0];
+                            memberCBS.first_name = selLineArr[1];
+                            memberCBS.middle_name = selLineArr[2];
+                            memberCBS.last_name = selLineArr[3];
+                            memberCBS.suffix = selLineArr[4];
+                            memberCBS.gender = selLineArr[5];
+                            memberCBS.civilStatus = selLineArr[6];
+                            memberCBS.membership_date = Convert.ToDateTime(selLineArr[7]);
+                            memberCBS.membershipStatus = selLineArr[8];
+                            memberCBS.membershipType = selLineArr[9];
+                            memberCBS.date_birth = Convert.ToDateTime(selLineArr[10]);
+                            memberCBS.contact_nos = selLineArr[11];
+                            memberCBS.mobile_nos = selLineArr[12];
+                            memberCBS.address1 = selLineArr[13];
+                            memberCBS.address2 = selLineArr[14];
+                            memberCBS.address3 = selLineArr[15];
+                            memberCBS.city = selLineArr[16];
+                            memberCBS.province = selLineArr[17];
+                            memberCBS.zipCode = selLineArr[18];
+                            memberCBS.emergency_contact_name = selLineArr[19];
+                            memberCBS.emergency_contact_nos = selLineArr[20];
+                            memberCBS.associateType = selLineArr[21];
+                            memberCBS.principal_cif = selLineArr[22];
+                            memberCBS.principal_name = selLineArr[23];
+                            memberCBS.cca_no = selLineArr[24];
+
+                            return apiResponse(new response { result = 0, obj = memberCBS });
+                        }
+                    }
+
+                    return apiResponse(new response { result = 0, obj = memberCBS });
+                }
+
             }
             catch (Exception ex)
             {
@@ -529,7 +709,20 @@ namespace accAfpslaiEmvSrvc.Controllers
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
                         string value = objPayload.value;
 
-                        var memberCard = ent.cards
+                        string cif = "";
+                        int cardId = 0;
+                        int memberId = 0;
+                        string cardNo = "";
+
+                        if (objPayload.cif != null) cif = objPayload.cif;
+                        if (objPayload.cardId != null) cardId = objPayload.cardId;
+                        if (objPayload.memberId != null) memberId = objPayload.memberId;
+                        if (objPayload.cardNo != null) cardNo = objPayload.cardNo;
+
+                        if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
+                        else
+                        {
+                            var memberCard = ent.cards
                                           .Join(
                                               ent.members,
                                               c => c.id,
@@ -545,10 +738,117 @@ namespace accAfpslaiEmvSrvc.Controllers
                                                   cIsCancel = c.is_cancel
                                               }
                                           )
-                                          .Where(o => o.cif.Equals(value) && o.mIsCancel == false && o.cIsCancel == false)
-                                          .ToList();
+                                          .Where(o => o.mIsCancel == false && o.cIsCancel == false && (o.cif.Equals(cif) || o.cardNo.Equals(cardNo) || o.cardId == cardId || o.memberId == memberId))
+                                          .LastOrDefault();
 
-                        return apiResponse(new response { result = 0, obj = memberCard });
+                            return apiResponse(new response { result = 0, obj = memberCard });
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/getCardForPrint")]
+        [HttpPost]
+        public IHttpActionResult GetCardForPrint(requestPayload reqPayload)
+        //public IHttpActionResult GetCardForPrint(string payload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        string cif = "";
+                        int cardId = 0;
+                        int memberId = 0;
+                        string cardNo = "";
+
+                        if (objPayload.cif != null) cif = objPayload.cif;
+                        if (objPayload.cardId != null) cardId = objPayload.cardId;
+                        if (objPayload.memberId != null) memberId = objPayload.memberId;
+                        if (objPayload.cardNo != null) cardNo = objPayload.cardNo;
+
+                        if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
+                        else
+                        {
+                            var memberCards = from m in ent.members
+                                              join c in ent.cards on m.id equals c.member_id into table1
+                                              from c in table1.ToList()
+                                              join b in ent.branches on m.branch_id equals b.id into table2
+                                              from b in table2.ToList()
+                                              where m.is_cancel == false && c.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
+                                              select new
+                                              {
+                                                  cardId = c.id,
+                                                  memberId = m.id,
+                                                  cif = m.cif,
+                                                  cardNo = c.cardNo,
+                                                  first_name = m.first_name,
+                                                  middle_name = m.middle_name,
+                                                  last_name = m.last_name,
+                                                  suffix = m.suffix,
+                                                  gender = m.gender,
+                                                  membership_date = m.membership_date,
+                                                  branchName = b.branchName,
+                                                  mDatePost = m.date_post,
+                                                  cDatePost = c.date_post,
+                                                  cTimePost = c.time_post,
+                                                  mIsCancel = m.is_cancel,
+                                                  cIsCancel = c.is_cancel
+                                              };
+
+                            cardForPrint cfp = new cardForPrint();
+
+                            if (memberCards.Count() > 0)
+                            {
+                                var memberCard = memberCards.ToList().LastOrDefault();
+
+                                string photoRepo = string.Format(@"{0}\{1}", Properties.Settings.Default.PhotoRepo, Convert.ToDateTime(memberCard.mDatePost).ToString(dateFormat));
+
+                                string photoFile = string.Format(@"{0}\{1}.jpg", photoRepo, memberCard.cif);
+                                if (System.IO.File.Exists(photoFile))
+                                {
+                                    var base64Photo = System.Convert.ToBase64String(System.IO.File.ReadAllBytes(photoFile));
+
+                                    cfp.cardId = memberCard.cardId;
+                                    cfp.memberId = memberCard.memberId;
+                                    cfp.cif = memberCard.cif;
+                                    cfp.cardNo = memberCard.cardNo;
+                                    cfp.first_name = memberCard.first_name;
+                                    cfp.middle_name = memberCard.middle_name;
+                                    cfp.last_name = memberCard.last_name;
+                                    cfp.suffix = memberCard.suffix;
+                                    cfp.gender = memberCard.gender;
+                                    cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
+                                    cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
+                                    cfp.branch_issued = memberCard.branchName;
+                                    cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
+                                    cfp.base64Photo = base64Photo;
+                                }
+                                else return apiResponse(new response { result = 1, obj = "Photo not found" });
+                            }
+
+                            return apiResponse(new response { result = 0, obj = cfp });
+                        }
                 }
             }
             catch (Exception ex)
@@ -1027,6 +1327,15 @@ namespace accAfpslaiEmvSrvc.Controllers
                             ent.members.Add(member);
                             ent.SaveChanges();
 
+                            string reference_number = member.online_reference_number;
+                            var objOnlineReg = ent.online_registration.Where(o => o.reference_number.Equals(reference_number)).FirstOrDefault();
+                            if (objOnlineReg != null)
+                            {
+                                objOnlineReg.date_captured = DateTime.Now.Date;
+                                objOnlineReg.reference_id = member.id;
+                                ent.SaveChanges();
+                            }
+
                             return apiResponse(new responseSuccessNewRecord { obj = member.id });
                         }
                 }
@@ -1173,6 +1482,14 @@ namespace accAfpslaiEmvSrvc.Controllers
                             if (obj != null)
                             {
                                 obj.is_cancel = true;
+                                ent.SaveChanges();
+                            }
+
+                            var objOnlineReg = ent.online_registration.Where(o => o.reference_id == memberId).FirstOrDefault();
+                            if (obj != null)
+                            {
+                                objOnlineReg.date_captured = null;
+                                objOnlineReg.reference_id = null;
                                 ent.SaveChanges();
                             }
                         }

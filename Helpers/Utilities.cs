@@ -69,24 +69,31 @@ namespace accAfpslaiEmvSrvc.Helpers
                     //if (reqPayload.payload.obj != null) payload = reqPayload.payload.obj.ToString();
                     //payload = reqPayload.payload;
 
+                    TimeSpan ts = System.DateTime.Now - Convert.ToDateTime(payloadAuth.dateRequest);                    
+
                     //save payload
                     string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
                     string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
                     if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
                     System.IO.File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
 
-                    if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuth.key) == Properties.Settings.Default.ApiAuth)
+                    bool isAuthorize = true;
+
+                    if (ts.TotalMinutes <= 30)
                     {
-                        afpslai_emvEntities ent = new afpslai_emvEntities();
-                        var user = ent.system_user.Where(o => o.user_name.Equals(payloadAuth.userName) && o.user_pass.Equals(payloadAuth.userPass));
-                        if (user.Count() == 0) return (int)System.Net.HttpStatusCode.Unauthorized;
-                        else
+                        if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuth.key) == Properties.Settings.Default.ApiAuth)
                         {
-                            userId = payloadAuth.userId;
-                            return 0;
+                            afpslai_emvEntities ent = new afpslai_emvEntities();
+                            var user = ent.system_user.Where(o => o.user_name.Equals(payloadAuth.userName) && o.user_pass.Equals(payloadAuth.userPass));
+
+                            if (user.Count() == 0) isAuthorize = false; else userId = payloadAuth.userId;
+
                         }
+                        else isAuthorize = false;
                     }
-                    else return (int)System.Net.HttpStatusCode.Unauthorized;
+                    else isAuthorize = false;
+
+                    if (isAuthorize) return 0; else return (int)System.Net.HttpStatusCode.Unauthorized;
                 }
             }
             catch (Exception ex)
@@ -114,7 +121,7 @@ namespace accAfpslaiEmvSrvc.Helpers
                 }
                 else
                 {
-                    msg = cmsResponse.resultMessage;
+                    msg = string.Format("{0} {1}", cmsResponse.resultCode, cmsResponse.resultMessage);
                     return false;
                 }
             }

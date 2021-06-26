@@ -17,6 +17,19 @@
     <Property Name="time_post" Type="time" Precision="6" />
     <Property Name="is_cancel" Type="bool" />
   </EntityType>
+  <EntityType Name="api_request_log">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="member_id" Type="int4" />
+    <Property Name="card_id" Type="int4" />
+    <Property Name="request" Type="varchar" MaxLength="200" />
+    <Property Name="response" Type="varchar" MaxLength="1000" />
+    <Property Name="is_success" Type="bool" />
+    <Property Name="date_post" Type="date" />
+    <Property Name="time_post" Type="time" Precision="6" />
+  </EntityType>
   <EntityType Name="associate_type">
     <Key>
       <PropertyRef Name="id" />
@@ -41,6 +54,8 @@
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="member_id" Type="int4" />
     <Property Name="cardNo" Type="varchar" MaxLength="50" />
+    <Property Name="date_CMS" Type="timestamp" />
+    <Property Name="date_CBS" Type="timestamp" />
     <Property Name="date_post" Type="date" />
     <Property Name="time_post" Type="time" Precision="6" />
     <Property Name="is_cancel" Type="bool" />
@@ -221,6 +236,7 @@
   </EntityType>
   <EntityContainer Name="afpslai_emvModelStoreContainer">
     <EntitySet Name="address" EntityType="Self.address" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="api_request_log" EntityType="Self.api_request_log" Schema="afpslai_emv" store:Type="Tables" />
     <EntitySet Name="associate_type" EntityType="Self.associate_type" Schema="afpslai_emv" store:Type="Tables" />
     <EntitySet Name="branch" EntityType="Self.branch" Schema="afpslai_emv" store:Type="Tables" />
     <EntitySet Name="card" EntityType="Self.card" Schema="afpslai_emv" store:Type="Tables" />

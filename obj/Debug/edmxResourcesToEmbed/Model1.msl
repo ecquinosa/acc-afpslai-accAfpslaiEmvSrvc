@@ -41,6 +41,8 @@
     <EntitySetMapping Name="cards">
       <EntityTypeMapping TypeName="afpslai_emvModel.card">
         <MappingFragment StoreEntitySet="card">
+          <ScalarProperty Name="date_CBS" ColumnName="date_CBS" />
+          <ScalarProperty Name="date_CMS" ColumnName="date_CMS" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="member_id" ColumnName="member_id" />
           <ScalarProperty Name="cardNo" ColumnName="cardNo" />
@@ -233,6 +235,20 @@
           <ScalarProperty Name="y" ColumnName="y" />
           <ScalarProperty Name="x" ColumnName="x" />
           <ScalarProperty Name="element" ColumnName="element" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="api_request_log">
+      <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
+        <MappingFragment StoreEntitySet="api_request_log">
+          <ScalarProperty Name="time_post" ColumnName="time_post" />
+          <ScalarProperty Name="date_post" ColumnName="date_post" />
+          <ScalarProperty Name="is_success" ColumnName="is_success" />
+          <ScalarProperty Name="response" ColumnName="response" />
+          <ScalarProperty Name="request" ColumnName="request" />
+          <ScalarProperty Name="card_id" ColumnName="card_id" />
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
           <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>

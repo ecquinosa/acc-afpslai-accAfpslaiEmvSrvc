@@ -1,0 +1,2 @@
+2021-06-25 20:17:42.4418|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData2|Could not find file 'C:\Program Files (x86)\IIS Express\cbs.txt'.
+2021-06-25 20:22:26.1064|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData2|URI formats are not supported.

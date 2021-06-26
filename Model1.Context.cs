@@ -42,5 +42,6 @@ namespace accAfpslaiEmvSrvc
         public virtual DbSet<system_role> system_role { get; set; }
         public virtual DbSet<system_user> system_user { get; set; }
         public virtual DbSet<cps_card_elements> cps_card_elements { get; set; }
+        public virtual DbSet<api_request_log> api_request_log { get; set; }
     }
 }

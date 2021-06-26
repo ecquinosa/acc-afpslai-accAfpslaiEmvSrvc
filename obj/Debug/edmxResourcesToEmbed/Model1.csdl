@@ -44,6 +44,8 @@
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="is_cancel" Type="Boolean" />
+    <Property Name="date_CMS" Type="DateTime" Precision="6" />
+    <Property Name="date_CBS" Type="DateTime" Precision="6" />
   </EntityType>
   <EntityType Name="civil_status">
     <Key>
@@ -219,6 +221,7 @@
     <EntitySet Name="system_role" EntityType="Self.system_role" />
     <EntitySet Name="system_user" EntityType="Self.system_user" />
     <EntitySet Name="cps_card_elements" EntityType="afpslai_emvModel.cps_card_elements" />
+    <EntitySet Name="api_request_log" EntityType="afpslai_emvModel.api_request_log" />
   </EntityContainer>
   <EntityType Name="cps_card_elements">
     <Key>
@@ -237,5 +240,18 @@
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="last_updated" Type="DateTime" Precision="6" />
     <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="api_request_log">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="member_id" Type="Int32" />
+    <Property Name="card_id" Type="Int32" />
+    <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+    <Property Name="is_success" Type="Boolean" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
   </EntityType>
 </Schema>

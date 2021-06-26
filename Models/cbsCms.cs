@@ -8,7 +8,8 @@ namespace accAfpslaiEmvSrvc.Models
     public class cbsCms
     {
 
-        public string id { get; set; }
+        public int memberId { get; set; }
+        public int cardId { get; set; }
         public string cif { get; set; }
         public string cardNo { get; set; }
         public string mobileNo { get; set; }

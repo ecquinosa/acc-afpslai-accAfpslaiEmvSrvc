@@ -22,6 +22,19 @@
           <Property Name="time_post" Type="time" Precision="6" />
           <Property Name="is_cancel" Type="bool" />
         </EntityType>
+        <EntityType Name="api_request_log">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="member_id" Type="int4" />
+          <Property Name="card_id" Type="int4" />
+          <Property Name="request" Type="varchar" MaxLength="200" />
+          <Property Name="response" Type="varchar" MaxLength="1000" />
+          <Property Name="is_success" Type="bool" />
+          <Property Name="date_post" Type="date" />
+          <Property Name="time_post" Type="time" Precision="6" />
+        </EntityType>
         <EntityType Name="associate_type">
           <Key>
             <PropertyRef Name="id" />
@@ -46,6 +59,8 @@
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="member_id" Type="int4" />
           <Property Name="cardNo" Type="varchar" MaxLength="50" />
+          <Property Name="date_CMS" Type="timestamp" />
+          <Property Name="date_CBS" Type="timestamp" />
           <Property Name="date_post" Type="date" />
           <Property Name="time_post" Type="time" Precision="6" />
           <Property Name="is_cancel" Type="bool" />
@@ -226,6 +241,7 @@
         </EntityType>
         <EntityContainer Name="afpslai_emvModelStoreContainer">
           <EntitySet Name="address" EntityType="Self.address" Schema="afpslai_emv" store:Type="Tables" />
+          <EntitySet Name="api_request_log" EntityType="Self.api_request_log" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="associate_type" EntityType="Self.associate_type" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="branch" EntityType="Self.branch" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="card" EntityType="Self.card" Schema="afpslai_emv" store:Type="Tables" />
@@ -291,6 +307,8 @@
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
           <Property Name="is_cancel" Type="Boolean" />
+          <Property Name="date_CMS" Type="DateTime" Precision="6" />
+          <Property Name="date_CBS" Type="DateTime" Precision="6" />
         </EntityType>
         <EntityType Name="civil_status">
           <Key>
@@ -466,6 +484,7 @@
           <EntitySet Name="system_role" EntityType="Self.system_role" />
           <EntitySet Name="system_user" EntityType="Self.system_user" />
           <EntitySet Name="cps_card_elements" EntityType="afpslai_emvModel.cps_card_elements" />
+          <EntitySet Name="api_request_log" EntityType="afpslai_emvModel.api_request_log" />
         </EntityContainer>
         <EntityType Name="cps_card_elements">
           <Key>
@@ -484,6 +503,19 @@
           <Property Name="time_post" Type="Time" Precision="6" />
           <Property Name="last_updated" Type="DateTime" Precision="6" />
           <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="api_request_log">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="member_id" Type="Int32" />
+          <Property Name="card_id" Type="Int32" />
+          <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="is_success" Type="Boolean" />
+          <Property Name="date_post" Type="DateTime" Precision="0" />
+          <Property Name="time_post" Type="Time" Precision="6" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -531,6 +563,8 @@
           <EntitySetMapping Name="cards">
             <EntityTypeMapping TypeName="afpslai_emvModel.card">
               <MappingFragment StoreEntitySet="card">
+                <ScalarProperty Name="date_CBS" ColumnName="date_CBS" />
+                <ScalarProperty Name="date_CMS" ColumnName="date_CMS" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="member_id" ColumnName="member_id" />
                 <ScalarProperty Name="cardNo" ColumnName="cardNo" />
@@ -723,6 +757,20 @@
                 <ScalarProperty Name="y" ColumnName="y" />
                 <ScalarProperty Name="x" ColumnName="x" />
                 <ScalarProperty Name="element" ColumnName="element" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="api_request_log">
+            <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
+              <MappingFragment StoreEntitySet="api_request_log">
+                <ScalarProperty Name="time_post" ColumnName="time_post" />
+                <ScalarProperty Name="date_post" ColumnName="date_post" />
+                <ScalarProperty Name="is_success" ColumnName="is_success" />
+                <ScalarProperty Name="response" ColumnName="response" />
+                <ScalarProperty Name="request" ColumnName="request" />
+                <ScalarProperty Name="card_id" ColumnName="card_id" />
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
