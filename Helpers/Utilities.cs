@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using accAfpslaiEmvSrvc.Models;
-
+//using accAfpslaiEmvSrvc.Models;
+using accAfpslaiEmvObjct;
 
 namespace accAfpslaiEmvSrvc.Helpers
 {
@@ -46,6 +46,15 @@ namespace accAfpslaiEmvSrvc.Helpers
             log.log_type = "System";
             log.user_id = userId;
             AddSysLog(log);
+        }
+
+        public static void SaveApiRequestLog(api_request_log arl)
+        {          
+            afpslai_emvEntities ent = new afpslai_emvEntities();
+            arl.date_post = DateTime.Now.Date;
+            arl.time_post = DateTime.Now.TimeOfDay;
+            ent.api_request_log.Add(arl);
+            ent.SaveChanges();
         }
 
         public static void AddSysLog(system_log system_log)
@@ -178,10 +187,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             }
         }       
 
-        //public static string GetEnumValue()
-        //{
-        //    string description = ((DataKeysEnum.table)value).AsString(Enum. EnumFormat.Description);
-        //}       
+            
 
     }
 }

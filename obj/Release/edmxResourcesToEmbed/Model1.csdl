@@ -253,5 +253,7 @@
     <Property Name="is_success" Type="Boolean" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="api_owner" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
   </EntityType>
 </Schema>

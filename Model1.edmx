@@ -27,6 +27,8 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="api_owner" Type="varchar" MaxLength="10" />
+          <Property Name="api_name" Type="varchar" MaxLength="50" />
           <Property Name="member_id" Type="int4" />
           <Property Name="card_id" Type="int4" />
           <Property Name="request" Type="varchar" MaxLength="200" />
@@ -516,6 +518,8 @@
           <Property Name="is_success" Type="Boolean" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
+          <Property Name="api_owner" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -764,6 +768,8 @@
           <EntitySetMapping Name="api_request_log">
             <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
               <MappingFragment StoreEntitySet="api_request_log">
+                <ScalarProperty Name="api_name" ColumnName="api_name" />
+                <ScalarProperty Name="api_owner" ColumnName="api_owner" />
                 <ScalarProperty Name="time_post" ColumnName="time_post" />
                 <ScalarProperty Name="date_post" ColumnName="date_post" />
                 <ScalarProperty Name="is_success" ColumnName="is_success" />

@@ -22,6 +22,8 @@
       <PropertyRef Name="id" />
     </Key>
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="api_owner" Type="varchar" MaxLength="10" />
+    <Property Name="api_name" Type="varchar" MaxLength="50" />
     <Property Name="member_id" Type="int4" />
     <Property Name="card_id" Type="int4" />
     <Property Name="request" Type="varchar" MaxLength="200" />

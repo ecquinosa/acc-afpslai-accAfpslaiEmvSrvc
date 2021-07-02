@@ -242,6 +242,8 @@
     <EntitySetMapping Name="api_request_log">
       <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
         <MappingFragment StoreEntitySet="api_request_log">
+          <ScalarProperty Name="api_name" ColumnName="api_name" />
+          <ScalarProperty Name="api_owner" ColumnName="api_owner" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="is_success" ColumnName="is_success" />

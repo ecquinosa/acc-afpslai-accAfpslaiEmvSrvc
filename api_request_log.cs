@@ -22,5 +22,7 @@ namespace accAfpslaiEmvSrvc
         public Nullable<bool> is_success { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
+        public string api_owner { get; set; }
+        public string api_name { get; set; }
     }
 }

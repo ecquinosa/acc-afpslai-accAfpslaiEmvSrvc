@@ -287,19 +287,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\cbsData.cs" />
-    <Compile Include="Models\cmsRequest.cs" />
-    <Compile Include="Models\cmsResponse.cs" />
-    <Compile Include="Models\memberImages.cs" />
-    <Compile Include="Models\cbsCms.cs" />
-    <Compile Include="Models\cancelCapture.cs" />
-    <Compile Include="Models\cardForPrint.cs" />
-    <Compile Include="Models\searchParam.cs" />
-    <Compile Include="Models\loginRequest.cs" />
-    <Compile Include="Models\user.cs" />
-    <Compile Include="Models\requestPayload.cs" />
-    <Compile Include="Models\requestCredential.cs" />
-    <Compile Include="Models\response.cs" />
     <Compile Include="online_registration.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -405,6 +392,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

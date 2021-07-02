@@ -1,2 +1,9 @@
 2021-06-26 07:51:29.6882|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData|Could not find file 'C:\Program Files (x86)\IIS Express\cbs.txt'.
 2021-06-26 07:53:12.7259|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData|Could not find file 'C:\Program Files (x86)\IIS Express\cbs.txt'.
+2021-06-26 11:41:36.0489|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|The cast to value type 'System.Int32' failed because the materialized value is null. Either the result type's generic parameter or the query must use a nullable type.
+2021-06-26 11:43:27.5872|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|The cast to value type 'System.Int32' failed because the materialized value is null. Either the result type's generic parameter or the query must use a nullable type.
+2021-06-26 11:53:58.6065|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
+2021-06-26 11:55:54.5737|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
+2021-06-26 15:02:59.0221|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|String was not recognized as a valid DateTime.
+2021-06-26 15:03:13.4882|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|String was not recognized as a valid DateTime.
+2021-06-26 15:03:18.1577|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|String was not recognized as a valid DateTime.

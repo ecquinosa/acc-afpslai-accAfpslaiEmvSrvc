@@ -2,8 +2,9 @@
 using System;
 using System.Linq;
 using System.Web.Http;
-using accAfpslaiEmvSrvc.Helpers;
-using accAfpslaiEmvSrvc.Models;
+//using accAfpslaiEmvSrvc.Helpers;
+//sing accAfpslaiEmvSrvc.Models;
+using accAfpslaiEmvObjct;
 
 namespace accAfpslaiEmvSrvc.Controllers
 {
@@ -28,7 +29,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -73,7 +74,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -87,29 +88,26 @@ namespace accAfpslaiEmvSrvc.Controllers
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
                         var cbsCms = Newtonsoft.Json.JsonConvert.DeserializeObject<cbsCms>(objPayload.ToString());
 
-                        Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
+                        Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
                         string msg = "";
                         cmsResponse cmsResponse = null;
-                        if (Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
+                        if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
                         {
-                            Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
+                            Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             return apiResponse(new responseSuccess());
                         }
                         else
-                        {
-                            afpslai_emvEntities ent = new afpslai_emvEntities();
-
+                        {                            
                             api_request_log arl = new api_request_log();
                             arl.card_id = cbsCms.cardId;
-                            arl.request = payload;
-                            arl.response = msg;
-                            arl.date_post = DateTime.Now.Date;
-                            arl.time_post = DateTime.Now.TimeOfDay;
+                            arl.api_owner = "cms";
+                            arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
                             arl.is_success = false;
-                            ent.api_request_log.Add(arl);
-                            ent.SaveChanges();
+                            arl.request = objPayload.ToString();
+                            arl.response = msg;
+                            Helpers.Utilities.SaveApiRequestLog(arl);
 
-                            Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
+                            Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
                             return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
                         }
@@ -130,7 +128,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -200,95 +198,27 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     return apiResponse(new response { result = 0, obj = memberCBS });
                                 }
                             }
-
-                            return apiResponse(new response { result = 0, obj = memberCBS });
-                        }
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
-            }
-        }
-
-        [Route("~/api/pullCBSData2")]
-        [HttpPost]
-        public IHttpActionResult PullCBSData2(searchParam objPayload)
-        {
-            try
-            {
-
-                //dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-
-                string cif = "";
-
-                if (objPayload.value != null) cif = objPayload.value;
-
-                if (string.IsNullOrEmpty(cif)) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
-                else
-                {
-                    string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\","") + @"\cbs.txt");
-                    string selectedLine = "";
-                    foreach (var line in lines)
-                    {
-                        if (line.Trim() != "")
-                        {
-                            if (line.Split('|')[0] == cif)
+                            else
                             {
-                                selectedLine = line;
-                                break;
+                                api_request_log arl = new api_request_log();
+                                arl.api_owner = "cbs";
+                                arl.api_name = "pullCBSData";
+                                arl.is_success = false;
+                                arl.request = cif;
+                                arl.response = "No record found";
+                                Helpers.Utilities.SaveApiRequestLog(arl);
                             }
-                        }
-                    }
-
-                    cbsData memberCBS = new cbsData();
-                    if (selectedLine != "")
-                    {
-                        string[] selLineArr = selectedLine.Split('|');
-
-                        if (lines != null)
-                        {
-                            memberCBS.cif = selLineArr[0];
-                            memberCBS.first_name = selLineArr[1];
-                            memberCBS.middle_name = selLineArr[2];
-                            memberCBS.last_name = selLineArr[3];
-                            memberCBS.suffix = selLineArr[4];
-                            memberCBS.gender = selLineArr[5];
-                            memberCBS.civilStatus = selLineArr[6];
-                            memberCBS.membership_date = Convert.ToDateTime(selLineArr[7]);
-                            memberCBS.membershipStatus = selLineArr[8];
-                            memberCBS.membershipType = selLineArr[9];
-                            memberCBS.date_birth = Convert.ToDateTime(selLineArr[10]);
-                            memberCBS.contact_nos = selLineArr[11];
-                            memberCBS.mobile_nos = selLineArr[12];
-                            memberCBS.address1 = selLineArr[13];
-                            memberCBS.address2 = selLineArr[14];
-                            memberCBS.address3 = selLineArr[15];
-                            memberCBS.city = selLineArr[16];
-                            memberCBS.province = selLineArr[17];
-                            memberCBS.zipCode = selLineArr[18];
-                            memberCBS.emergency_contact_name = selLineArr[19];
-                            memberCBS.emergency_contact_nos = selLineArr[20];
-                            memberCBS.associateType = selLineArr[21];
-                            memberCBS.principal_cif = selLineArr[22];
-                            memberCBS.principal_name = selLineArr[23];
-                            memberCBS.cca_no = selLineArr[24];
 
                             return apiResponse(new response { result = 0, obj = memberCBS });
                         }
-                    }
-
-                    return apiResponse(new response { result = 0, obj = memberCBS });
                 }
-
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
                 return apiResponse(new responseFailedSystemError { obj = ex.Message });
             }
-        }
+        }      
 
         [Route("~/api/pushCBSData")]
         [HttpPost]
@@ -298,7 +228,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -321,6 +251,14 @@ namespace accAfpslaiEmvSrvc.Controllers
                             cardNo = cbsCms.cardNo.substring(Convert.ToInt32(Properties.Settings.Default.CBS_CardNo_Req.Split(',')[0]), Convert.ToInt32(Properties.Settings.Default.CBS_CardNo_Req.Split(',')[1]));
                         }
 
+                        //api_request_log arl = new api_request_log();
+                        //arl.api_owner = "cbs";
+                        //arl.api_name = "pushCBSData";
+                        //arl.is_success = false;
+                        //arl.request = objPayload.ToString();
+                        //arl.response = "CBS push response";
+                        //Helpers.Utilities.SaveApiRequestLog(arl);
+
                         return apiResponse(new response { result = 0, obj = string.Format("Success receiving mid {0} and card no {1}", cbsCms.cif, cardNo) });
                 }
             }
@@ -340,7 +278,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -373,7 +311,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -427,7 +365,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -462,7 +400,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -494,7 +432,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -527,7 +465,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -560,7 +498,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -593,7 +531,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -626,7 +564,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -659,7 +597,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -692,7 +630,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -761,7 +699,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -787,40 +725,44 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (objPayload.memberId != null) memberId = objPayload.memberId;
                         if (objPayload.cardNo != null) cardNo = objPayload.cardNo;
 
+                        //where m.is_cancel == false && c.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
+                        //where m.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
+
                         if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
                         else
                         {
-                            var memberCards = from m in ent.members
+                            var memberCards = (from m in ent.members
                                               join c in ent.cards on m.id equals c.member_id into table1
-                                              from c in table1.ToList()
+                                              from c in table1.DefaultIfEmpty()
                                               join b in ent.branches on m.branch_id equals b.id into table2
-                                              from b in table2.ToList()
-                                              where m.is_cancel == false && c.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
-                                              select new
+                                              from b in table2.DefaultIfEmpty()
+                                               where m.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
+                                               select new
                                               {
-                                                  cardId = c.id,
+                                                  cardId = c == null ? 0 : c.id,
                                                   memberId = m.id,
                                                   cif = m.cif,
-                                                  cardNo = c.cardNo,
+                                                  cardNo = c == null ? string.Empty : c.cardNo,
+                                                  cardName = m.card_name,
                                                   first_name = m.first_name,
                                                   middle_name = m.middle_name,
                                                   last_name = m.last_name,
                                                   suffix = m.suffix,
                                                   gender = m.gender,
                                                   membership_date = m.membership_date,
-                                                  branchName = b.branchName,
+                                                  branchName = b == null ? string.Empty : b.branchName,
                                                   mDatePost = m.date_post,
-                                                  cDatePost = c.date_post,
-                                                  cTimePost = c.time_post,
+                                                  cDatePost = c == null ? string.Empty : c.date_post.ToString(),
+                                                  cTimePost = c == null ? string.Empty : c.time_post.ToString(),
                                                   mIsCancel = m.is_cancel,
-                                                  cIsCancel = c.is_cancel
-                                              };
+                                                  cIsCancel = c == null ? false : c.is_cancel
+                                              });
 
                             cardForPrint cfp = new cardForPrint();
 
                             if (memberCards.Count() > 0)
                             {
-                                var memberCard = memberCards.ToList().LastOrDefault();
+                                var memberCard = memberCards.ToList().Where(o => o.cIsCancel.Equals(false)).LastOrDefault();                                
 
                                 string photoRepo = string.Format(@"{0}\{1}", Properties.Settings.Default.PhotoRepo, Convert.ToDateTime(memberCard.mDatePost).ToString(dateFormat));
 
@@ -833,6 +775,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.memberId = memberCard.memberId;
                                     cfp.cif = memberCard.cif;
                                     cfp.cardNo = memberCard.cardNo;
+                                    cfp.cardName = memberCard.cardName;
                                     cfp.first_name = memberCard.first_name;
                                     cfp.middle_name = memberCard.middle_name;
                                     cfp.last_name = memberCard.last_name;
@@ -841,7 +784,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
                                     cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
                                     cfp.branch_issued = memberCard.branchName;
-                                    cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
+                                    if(!string.IsNullOrEmpty(memberCard.cDatePost))cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
                                     cfp.base64Photo = base64Photo;
                                 }
                                 else return apiResponse(new response { result = 1, obj = "Photo not found" });
@@ -866,7 +809,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -923,7 +866,7 @@ namespace accAfpslaiEmvSrvc.Controllers
         {
             try
             {
-                //Utilities.SavePayload(reqPayload);
+                //Helpers.Utilities.SavePayload(reqPayload);
 
                 afpslai_emvEntities ent = new afpslai_emvEntities();
                 dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(reqPayload.payload);
@@ -961,7 +904,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                   .Where(o => o.userName.Equals(userName))
                                   .ToList();
 
-                                Utilities.SaveSystemLog(reqPayload.system, systemUser[0].userId, string.Format("{0} log in ", userName));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, systemUser[0].userId, string.Format("{0} log in ", userName));
 
                                 return apiResponse(new response { result = 0, obj = systemUser });
                             }
@@ -1013,7 +956,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1058,7 +1001,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.system_user.Add(user);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} user is added", user_name));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} user is added", user_name));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -1083,7 +1026,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                         obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(user.user_pass);
                                         ent.SaveChanges();
 
-                                        Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("user id {0} is modified", userId));
+                                        Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("user id {0} is modified", userId));
 
                                         return apiResponse(new responseSuccessUpdateRecord());
                                     }
@@ -1106,7 +1049,7 @@ namespace accAfpslaiEmvSrvc.Controllers
         //{
         //    string payload = reqPayload.payload;
 
-        //    var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+        //    var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
         //    switch (validationResponse)
         //    {
@@ -1181,7 +1124,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                 //ent.system_log.Add(system_log);
                 //ent.SaveChanges();
 
-                Utilities.AddSysLog(system_log);
+                Helpers.Utilities.AddSysLog(system_log);
 
                 return apiResponse(new responseSuccessNewRecord());
                 //}
@@ -1243,7 +1186,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1300,7 +1243,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1355,7 +1298,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1411,7 +1354,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1457,7 +1400,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1536,7 +1479,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1582,7 +1525,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1615,7 +1558,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.system_role.Add(role);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} role is added", roleDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} role is added", roleDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -1628,7 +1571,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.role = role.role;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("role id {0} is modified", roleId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("role id {0} is modified", roleId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -1652,7 +1595,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1701,7 +1644,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1732,7 +1675,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.associate_type.Add(assocType);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} associate type is added", assocType));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} associate type is added", assocType));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -1746,7 +1689,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.associateType = assocType.associateType;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("associate type id {0} is modified", assocTypeId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("associate type id {0} is modified", assocTypeId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -1770,7 +1713,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1797,7 +1740,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 obj.is_deleted = true;
                                 ent.SaveChanges();
 
-                                Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.associateType));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.associateType));
 
                                 return apiResponse(new responseSuccessDeleteRecord());
                             }
@@ -1820,7 +1763,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1851,7 +1794,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.branches.Add(branch);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} branch is added", branchName));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} branch is added", branchName));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -1865,7 +1808,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.branchName = branch.branchName;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("branch id {0} is modified", branchId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("branch id {0} is modified", branchId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -1889,7 +1832,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1916,7 +1859,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 obj.is_deleted = true;
                                 ent.SaveChanges();
 
-                                Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.branchName));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.branchName));
 
                                 return apiResponse(new responseSuccessDeleteRecord());
                             }
@@ -1939,7 +1882,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -1970,7 +1913,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.civil_status.Add(civilStatus);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} civil status is added", civilStatusDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} civil status is added", civilStatusDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -1984,7 +1927,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.civilStatus = civilStatus.civilStatus;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("civil status id {0} is modified", civilStatusId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("civil status id {0} is modified", civilStatusId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -2008,7 +1951,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2035,7 +1978,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 obj.is_deleted = true;
                                 ent.SaveChanges();
 
-                                Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.civilStatus));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.civilStatus));
 
                                 return apiResponse(new responseSuccessDeleteRecord());
                             }
@@ -2058,7 +2001,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2089,7 +2032,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.membership_status.Add(membershipStatus);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} membership status is added", membershipStatusDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} membership status is added", membershipStatusDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -2103,7 +2046,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.membershipStatus = membershipStatus.membershipStatus;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("membership status id {0} is modified", membershipStatusId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("membership status id {0} is modified", membershipStatusId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -2127,7 +2070,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2153,7 +2096,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             ent.dcs_system_setting.Add(dss);
                             ent.SaveChanges();
 
-                            Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is added"));
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is added"));
 
                             return apiResponse(new responseSuccessNewRecord());
                         }
@@ -2167,7 +2110,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             obj.cardname_length = dcs_system_setting.cardname_length;
                             ent.SaveChanges();
 
-                            Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is modified"));
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is modified"));
 
                             return apiResponse(new responseSuccessUpdateRecord());
                         }
@@ -2188,7 +2131,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2264,7 +2207,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             ent.cps_card_elements.Add(cceCif);
                             ent.SaveChanges();
 
-                            Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Cps card elements are added"));
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Cps card elements are added"));
 
                             return apiResponse(new responseSuccessNewRecord());
                         }
@@ -2278,7 +2221,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             //obj.cardname_length = dcs_system_setting.cardname_length;
                             //ent.SaveChanges();
 
-                            //Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is modified"));
+                            //Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is modified"));
 
                             return apiResponse(new responseSuccessUpdateRecord());
                         }
@@ -2328,7 +2271,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2359,7 +2302,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.membership_type.Add(membershipType);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} membership type is added", membershipTypeDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} membership type is added", membershipTypeDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -2373,7 +2316,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.membershipType = membershipType.membershipType;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("membership type id {0} is modified", membershipTypeId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("membership type id {0} is modified", membershipTypeId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -2397,7 +2340,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2445,7 +2388,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2476,7 +2419,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.print_type.Add(printType);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} print type is added", printTypeDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} print type is added", printTypeDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -2490,7 +2433,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.printType = printType.printType;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("print type id {0} is modified", printTypeId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("print type id {0} is modified", printTypeId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -2514,7 +2457,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2562,7 +2505,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
@@ -2593,7 +2536,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     ent.recard_reason.Add(recardReason);
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} recard reason is added", recardReasonDesc));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} recard reason is added", recardReasonDesc));
 
                                     return apiResponse(new responseSuccessNewRecord());
                                 }
@@ -2607,7 +2550,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     obj.recardReason = recardReason.recardReason;
                                     ent.SaveChanges();
 
-                                    Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("recard reason id {0} is modified", recardReasonId));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("recard reason id {0} is modified", recardReasonId));
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -2631,7 +2574,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
 
                 switch (validationResponse)
                 {
