@@ -2631,12 +2631,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             else if (objResp is responseFailedDuplicateRecord) resp = (responseFailedDuplicateRecord)objResp;
             else if (objResp is responseFailedBadRequest) resp = (responseFailedBadRequest)objResp;
             else if (objResp is responseFailedUnauthorized) resp = (responseFailedUnauthorized)objResp;
-
-            //if (resp.result == 1) return Content(HttpStatusCode.InternalServerError, resp);
-            //else if (resp.result == 2) return Content(HttpStatusCode.BadRequest, resp);
-            //else if (resp.result == 3) return Content(HttpStatusCode.Forbidden, resp);
-            //else return Ok(resp);
-
+          
             return Ok(resp);
         }
 
