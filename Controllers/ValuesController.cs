@@ -556,6 +556,54 @@ namespace accAfpslaiEmvSrvc.Controllers
             }
         }
 
+        [Route("~/api/getSystemUser")]
+        [HttpPost]
+        public IHttpActionResult GetSystemUser(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                        int userId = 0;
+
+                        if (payload != "")
+                        {
+                            dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                            if (objPayload.userId == null) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                            else
+                            {
+                                userId = objPayload.userId;
+                                var obj = ent.system_user.Where(o => o.id == userId);
+
+                                return apiResponse(new response { result = 0, obj = obj });
+                            }
+                        }
+                        else
+                        {
+                            return apiResponse(new response { result = 0, obj = ent.system_user });
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
         [Route("~/api/getPrintType")]
         [HttpPost]
         public IHttpActionResult GetPrintType(requestPayload reqPayload)
@@ -881,6 +929,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         string userName = user.user_name;
                         var objUsername = ent.system_user.Where(o => o.user_name.Equals(userName)).FirstOrDefault();
                         if (objUsername == null) return apiResponse(new responseFailedBadRequest { message = "User does not exist" });
+                        else if (objUsername.status == "Not active") return apiResponse(new responseFailedBadRequest { message = "User does not exist" });
+                        else if (objUsername.status == "Hold") return apiResponse(new responseFailedBadRequest { message = "User account status is on hold" });
                         else
                         {
 
