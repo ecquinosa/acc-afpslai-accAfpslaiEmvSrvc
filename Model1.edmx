@@ -111,6 +111,7 @@
           <Property Name="member_type_assoc_allow_yrs" Type="int4" />
           <Property Name="member_type_reg_allow_yrs" Type="int4" />
           <Property Name="cardname_length" Type="int4" />
+          <Property Name="system_default_password" Type="varchar" MaxLength="100" />
           <Property Name="last_updated" Type="timestamp" />
         </EntityType>
         <EntityType Name="member">
@@ -238,6 +239,7 @@
           <Property Name="suffix" Type="varchar" MaxLength="10" />
           <Property Name="role_id" Type="int4" />
           <Property Name="status" Type="varchar" MaxLength="20" />
+          <Property Name="is_deleted" Type="bool" />
           <Property Name="date_post" Type="date" />
           <Property Name="time_post" Type="time" Precision="6" />
         </EntityType>
@@ -339,6 +341,7 @@
           <Property Name="member_type_reg_allow_yrs" Type="Int32" />
           <Property Name="cardname_length" Type="Int32" />
           <Property Name="last_updated" Type="DateTime" Precision="6" />
+          <Property Name="system_default_password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="member">
           <Key>
@@ -467,6 +470,7 @@
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
+          <Property Name="is_deleted" Type="Boolean" />
         </EntityType>
         <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="addresses" EntityType="Self.address" />
@@ -600,6 +604,7 @@
           <EntitySetMapping Name="dcs_system_setting">
             <EntityTypeMapping TypeName="afpslai_emvModel.dcs_system_setting">
               <MappingFragment StoreEntitySet="dcs_system_setting">
+                <ScalarProperty Name="system_default_password" ColumnName="system_default_password" />
                 <ScalarProperty Name="last_updated" ColumnName="last_updated" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="cif_length" ColumnName="cif_length" />
@@ -732,6 +737,7 @@
           <EntitySetMapping Name="system_user">
             <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
               <MappingFragment StoreEntitySet="system_user">
+                <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_name" ColumnName="user_name" />
                 <ScalarProperty Name="user_pass" ColumnName="user_pass" />

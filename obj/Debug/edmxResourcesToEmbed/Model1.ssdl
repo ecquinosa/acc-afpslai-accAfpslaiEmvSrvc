@@ -106,6 +106,7 @@
     <Property Name="member_type_assoc_allow_yrs" Type="int4" />
     <Property Name="member_type_reg_allow_yrs" Type="int4" />
     <Property Name="cardname_length" Type="int4" />
+    <Property Name="system_default_password" Type="varchar" MaxLength="100" />
     <Property Name="last_updated" Type="timestamp" />
   </EntityType>
   <EntityType Name="member">
@@ -233,6 +234,7 @@
     <Property Name="suffix" Type="varchar" MaxLength="10" />
     <Property Name="role_id" Type="int4" />
     <Property Name="status" Type="varchar" MaxLength="20" />
+    <Property Name="is_deleted" Type="bool" />
     <Property Name="date_post" Type="date" />
     <Property Name="time_post" Type="time" Precision="6" />
   </EntityType>

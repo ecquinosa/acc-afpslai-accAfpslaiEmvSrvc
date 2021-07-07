@@ -97,7 +97,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             return apiResponse(new responseSuccess());
                         }
                         else
-                        {                            
+                        {
                             api_request_log arl = new api_request_log();
                             arl.card_id = cbsCms.cardId;
                             arl.api_owner = "cms";
@@ -218,7 +218,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                 logger.Error(ex.Message);
                 return apiResponse(new responseFailedSystemError { obj = ex.Message });
             }
-        }      
+        }
 
         [Route("~/api/pushCBSData")]
         [HttpPost]
@@ -586,14 +586,51 @@ namespace accAfpslaiEmvSrvc.Controllers
                             else
                             {
                                 userId = objPayload.userId;
-                                var obj = ent.system_user.Where(o => o.id == userId);
+                                //var obj = ent.system_user.Where(o => o.id == userId);
 
-                                return apiResponse(new response { result = 0, obj = obj });
+                                var users = from u in ent.system_user
+                                            join r in ent.system_role on u.role_id equals r.id into table1
+                                            from r in table1.ToList()
+                                            where u.id == userId
+                                            select new
+                                            {
+                                                id = u.id,
+                                                user_name = u.user_name,
+                                                first_name = u.first_name,
+                                                middle_name = u.middle_name,
+                                                last_name = u.last_name,
+                                                suffix = u.suffix,
+                                                role_id = u.role_id,
+                                                role = r.role,
+                                                status = u.status,
+                                                fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
+                                                is_deleted = u.is_deleted
+                                            };
+
+                                return apiResponse(new response { result = 0, obj = users });
                             }
                         }
                         else
                         {
-                            return apiResponse(new response { result = 0, obj = ent.system_user });
+                            var users = from u in ent.system_user
+                                        join r in ent.system_role on u.role_id equals r.id into table1
+                                        from r in table1.ToList()
+                                        select new
+                                        {
+                                            userId = u.id,
+                                            userName = u.user_name,
+                                            firstName = u.first_name,
+                                            middleName = u.middle_name,
+                                            lastName = u.last_name,
+                                            suffix = u.suffix,
+                                            roleId = u.role_id,
+                                            roleDesc = r.role,
+                                            status = u.status,
+                                            fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
+                                            is_deleted = u.is_deleted
+                                        };
+
+                            return apiResponse(new response { result = 0, obj = users });
                         }
                 }
             }
@@ -780,37 +817,37 @@ namespace accAfpslaiEmvSrvc.Controllers
                         else
                         {
                             var memberCards = (from m in ent.members
-                                              join c in ent.cards on m.id equals c.member_id into table1
-                                              from c in table1.DefaultIfEmpty()
-                                              join b in ent.branches on m.branch_id equals b.id into table2
-                                              from b in table2.DefaultIfEmpty()
+                                               join c in ent.cards on m.id equals c.member_id into table1
+                                               from c in table1.DefaultIfEmpty()
+                                               join b in ent.branches on m.branch_id equals b.id into table2
+                                               from b in table2.DefaultIfEmpty()
                                                where m.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
                                                select new
-                                              {
-                                                  cardId = c == null ? 0 : c.id,
-                                                  memberId = m.id,
-                                                  cif = m.cif,
-                                                  cardNo = c == null ? string.Empty : c.cardNo,
-                                                  cardName = m.card_name,
-                                                  first_name = m.first_name,
-                                                  middle_name = m.middle_name,
-                                                  last_name = m.last_name,
-                                                  suffix = m.suffix,
-                                                  gender = m.gender,
-                                                  membership_date = m.membership_date,
-                                                  branchName = b == null ? string.Empty : b.branchName,
-                                                  mDatePost = m.date_post,
-                                                  cDatePost = c == null ? string.Empty : c.date_post.ToString(),
-                                                  cTimePost = c == null ? string.Empty : c.time_post.ToString(),
-                                                  mIsCancel = m.is_cancel,
-                                                  cIsCancel = c == null ? false : c.is_cancel
-                                              });
+                                               {
+                                                   cardId = c == null ? 0 : c.id,
+                                                   memberId = m.id,
+                                                   cif = m.cif,
+                                                   cardNo = c == null ? string.Empty : c.cardNo,
+                                                   cardName = m.card_name,
+                                                   first_name = m.first_name,
+                                                   middle_name = m.middle_name,
+                                                   last_name = m.last_name,
+                                                   suffix = m.suffix,
+                                                   gender = m.gender,
+                                                   membership_date = m.membership_date,
+                                                   branchName = b == null ? string.Empty : b.branchName,
+                                                   mDatePost = m.date_post,
+                                                   cDatePost = c == null ? string.Empty : c.date_post.ToString(),
+                                                   cTimePost = c == null ? string.Empty : c.time_post.ToString(),
+                                                   mIsCancel = m.is_cancel,
+                                                   cIsCancel = c == null ? false : c.is_cancel
+                                               });
 
                             cardForPrint cfp = new cardForPrint();
 
                             if (memberCards.Count() > 0)
                             {
-                                var memberCard = memberCards.ToList().Where(o => o.cIsCancel.Equals(false)).LastOrDefault();                                
+                                var memberCard = memberCards.ToList().Where(o => o.cIsCancel.Equals(false)).LastOrDefault();
 
                                 string photoRepo = string.Format(@"{0}\{1}", Properties.Settings.Default.PhotoRepo, Convert.ToDateTime(memberCard.mDatePost).ToString(dateFormat));
 
@@ -832,7 +869,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
                                     cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
                                     cfp.branch_issued = memberCard.branchName;
-                                    if(!string.IsNullOrEmpty(memberCard.cDatePost))cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
+                                    if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
                                     cfp.base64Photo = base64Photo;
                                 }
                                 else return apiResponse(new response { result = 1, obj = "Photo not found" });
@@ -1000,7 +1037,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
         [Route("~/api/addSystemUser")]
         [HttpPost]
-        public IHttpActionResult AddSysemUser(requestPayload reqPayload)
+        public IHttpActionResult AddSystemUser(requestPayload reqPayload)
         {
             try
             {
@@ -1023,7 +1060,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
                         var user = Newtonsoft.Json.JsonConvert.DeserializeObject<system_user>(objPayload.ToString()); ;
 
-                        if (string.IsNullOrEmpty(user.user_name) || string.IsNullOrEmpty(user.user_pass) || string.IsNullOrEmpty(user.first_name) || string.IsNullOrEmpty(user.last_name)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        if (string.IsNullOrEmpty(user.user_name) || string.IsNullOrEmpty(user.first_name) || string.IsNullOrEmpty(user.last_name)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else if (user.role_id == null || user.role_id == 0) return apiResponse(new responseFailedBadRequest { message = "Invalid system role" });
                         else
                         {
@@ -1036,6 +1073,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                             if (user.id == 0)
                             {
+                                var dss = ent.dcs_system_setting;
                                 var objUsername = ent.system_user.Where(o => o.user_name.Equals(user_name));
                                 var objFirstAndLast = ent.system_user.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix));
                                 if (objUsername.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
@@ -1045,9 +1083,10 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     if (string.IsNullOrEmpty(user.middle_name)) user.middle_name = "";
                                     if (string.IsNullOrEmpty(user.suffix)) user.suffix = "";
                                     user.status = "Active";
-                                    user.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(user.user_pass);
+                                    user.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
                                     user.date_post = DateTime.Now.Date;
                                     user.time_post = DateTime.Now.TimeOfDay;
+                                    user.is_deleted = false;
                                     ent.system_user.Add(user);
                                     ent.SaveChanges();
 
@@ -1067,21 +1106,141 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
                                     if (obj != null)
                                     {
+                                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                                        sb.Append("");
+                                        if (obj.user_name != user.user_name) sb.Append(". Username changed");
+                                        if (obj.first_name != user.first_name) sb.Append(". Firstname changed");
+                                        if (obj.last_name != user.last_name) sb.Append(". Lastname changed");
+                                        if (obj.status != user.status) sb.Append(". Status changed");
+                                        if (string.IsNullOrEmpty(user.middle_name)) if (obj.middle_name != user.middle_name) sb.Append(". Middlename changed");
+                                        if (string.IsNullOrEmpty(user.suffix)) if (obj.suffix != user.suffix) sb.Append(". Suffix changed");
+                                        if (sb.ToString() != "") sb.Append(".");
+
                                         obj.user_name = user.user_name;
                                         obj.first_name = user.first_name;
-                                        obj.last_name = user.first_name;
+                                        obj.last_name = user.last_name;
                                         if (string.IsNullOrEmpty(user.middle_name)) obj.middle_name = "";
                                         if (string.IsNullOrEmpty(user.suffix)) obj.suffix = "";
                                         obj.status = user.status;
-                                        obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(user.user_pass);
+                                        obj.role_id = user.role_id;
                                         ent.SaveChanges();
 
-                                        Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("user id {0} is modified", userId));
+                                        Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", user.user_name, sb.ToString()));
 
                                         return apiResponse(new responseSuccessUpdateRecord());
                                     }
                                     else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
                                 }
+                            }
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/resetUserPassword")]
+        [HttpPost]
+        public IHttpActionResult ResetUserPassword(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        int userId = 0;
+
+                        if (objPayload.userId != null) userId = objPayload.userId;
+
+                        if (userId == 0) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
+                        else
+                        {
+                            var dss = ent.dcs_system_setting;
+
+                            var obj = ent.system_user.Where(o => o.id == userId);
+                            if (obj.Count() > 0) return apiResponse(new responseFailedBadRequest { message = "User not found" });
+                            else
+                            {
+                                obj.FirstOrDefault().user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
+                                ent.SaveChanges();
+
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password is reset", obj.FirstOrDefault().user_name));
+
+                                return apiResponse(new responseSuccess { message = "User password is reset" });
+                            }
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/changeUserPassword")]
+        [HttpPost]
+        public IHttpActionResult ChangeUserPassword(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        int userId = 0;
+                        string userPass = "";
+
+                        if (objPayload.userId != null) userId = objPayload.userId;
+                        if (objPayload.userPass != null) userPass = objPayload.userPass;
+
+                        if (userId == 0 || userPass == "") return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        else
+                        {
+                            var dss = ent.dcs_system_setting;
+
+                            var obj = ent.system_user.Where(o => o.id == userId);
+                            if (obj.Count() > 0) return apiResponse(new responseFailedBadRequest { message = "User not found" });
+                            else
+                            {
+                                obj.FirstOrDefault().user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userPass);
+                                ent.SaveChanges();
+
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password is reset", obj.FirstOrDefault().user_name));
+
+                                return apiResponse(new responseSuccess { message = "User password is reset" });
                             }
                         }
                 }
@@ -1667,6 +1826,54 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             int roleId = role.id;
                             var obj = ent.system_role.Where(o => o.id == roleId).FirstOrDefault();
+                            if (obj != null)
+                            {
+                                obj.is_deleted = true;
+                                ent.SaveChanges();
+
+                                return apiResponse(new responseSuccessDeleteRecord());
+                            }
+                            else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/delSystemUser")]
+        [HttpPost]
+        public IHttpActionResult DeleteSystemUser(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                        var user = Newtonsoft.Json.JsonConvert.DeserializeObject<system_user>(objPayload.ToString()); ;
+
+                        if (user.id == 0) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        else
+                        {
+                            int userId = user.id;
+                            var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
                             if (obj != null)
                             {
                                 obj.is_deleted = true;
@@ -2681,7 +2888,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             else if (objResp is responseFailedDuplicateRecord) resp = (responseFailedDuplicateRecord)objResp;
             else if (objResp is responseFailedBadRequest) resp = (responseFailedBadRequest)objResp;
             else if (objResp is responseFailedUnauthorized) resp = (responseFailedUnauthorized)objResp;
-          
+
             return Ok(resp);
         }
 

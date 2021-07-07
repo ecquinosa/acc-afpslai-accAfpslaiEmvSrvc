@@ -74,6 +74,7 @@
     <Property Name="member_type_reg_allow_yrs" Type="Int32" />
     <Property Name="cardname_length" Type="Int32" />
     <Property Name="last_updated" Type="DateTime" Precision="6" />
+    <Property Name="system_default_password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="member">
     <Key>
@@ -202,6 +203,7 @@
     <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="is_deleted" Type="Boolean" />
   </EntityType>
   <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="addresses" EntityType="Self.address" />

@@ -20,5 +20,6 @@ namespace accAfpslaiEmvSrvc
         public Nullable<int> member_type_reg_allow_yrs { get; set; }
         public Nullable<int> cardname_length { get; set; }
         public Nullable<System.DateTime> last_updated { get; set; }
+        public string system_default_password { get; set; }
     }
 }

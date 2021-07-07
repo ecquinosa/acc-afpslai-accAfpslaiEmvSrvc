@@ -78,13 +78,20 @@ namespace accAfpslaiEmvSrvc.Helpers
                     //if (reqPayload.payload.obj != null) payload = reqPayload.payload.obj.ToString();
                     //payload = reqPayload.payload;
 
-                    TimeSpan ts = System.DateTime.Now - Convert.ToDateTime(payloadAuth.dateRequest);                    
+                    TimeSpan ts = System.DateTime.Now - Convert.ToDateTime(payloadAuth.dateRequest);
 
                     //save payload
-                    string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
-                    string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
-                    if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
-                    System.IO.File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
+                    try
+                    {
+                        string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
+                        string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
+                        if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
+                        System.IO.File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
+                    }
+                    catch (Exception ex)
+                    {
+                        accAfpslaiEmvSrvc.Controllers.ValuesController.logger.Error(ex.Message);
+                    }
 
                     bool isAuthorize = true;
 
