@@ -106,17 +106,18 @@ namespace accAfpslaiEmvSrvc.Controllers
                             arl.request = objPayload.ToString();
                             arl.response = msg;
                             Helpers.Utilities.SaveApiRequestLog(arl);
-
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
-                            logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
-                            return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
+                            logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));                           
+                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
+                            else return apiResponse(new responseSuccess());
                         }
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                if(!Properties.Settings.Default.IsEnforcePMS)return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                else return apiResponse(new responseSuccess());
             }
         }
 

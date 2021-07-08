@@ -76,5 +76,14 @@ namespace accAfpslaiEmvSrvc.Properties {
                 return ((string)(this["WiseCard_cardBindCifNo_Url"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsEnforcePMS {
+            get {
+                return ((bool)(this["IsEnforcePMS"]));
+            }
+        }
     }
 }
