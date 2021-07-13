@@ -23,9 +23,9 @@ namespace accAfpslaiEmvSrvc
         public string font_name { get; set; }
         public Nullable<int> font_size { get; set; }
         public Nullable<int> font_style { get; set; }
+        public string element_type { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
         public Nullable<System.DateTime> last_updated { get; set; }
-        public string element_type { get; set; }
     }
 }

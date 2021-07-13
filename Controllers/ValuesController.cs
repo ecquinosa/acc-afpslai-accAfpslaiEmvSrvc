@@ -107,7 +107,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             arl.response = msg;
                             Helpers.Utilities.SaveApiRequestLog(arl);
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
-                            logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));                           
+                            logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
                             if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
                             else return apiResponse(new responseSuccess());
                         }
@@ -116,7 +116,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                if(!Properties.Settings.Default.IsEnforcePMS)return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new responseFailedSystemError { obj = ex.Message });
                 else return apiResponse(new responseSuccess());
             }
         }
@@ -293,6 +293,40 @@ namespace accAfpslaiEmvSrvc.Controllers
                     default:
                         afpslai_emvEntities ent = new afpslai_emvEntities();
                         var obj = ent.dcs_system_setting;
+
+                        return apiResponse(new response { result = 0, obj = obj });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+            }
+        }
+
+        [Route("~/api/getCpsCardElements")]
+        [HttpPost]
+        public IHttpActionResult GetCpsCardElements(requestPayload reqPayload)
+        {
+            try
+            {
+
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                        var obj = ent.cps_card_elements;
 
                         return apiResponse(new response { result = 0, obj = obj });
                 }
@@ -971,6 +1005,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         else if (objUsername.status == "Hold") return apiResponse(new responseFailedBadRequest { message = "User account status is on hold" });
                         else
                         {
+                            var dss = ent.dcs_system_setting;
+                            bool isChangePassword = (dss.FirstOrDefault().system_default_password == user.user_pass);
 
                             if (user.user_pass == accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(objUsername.user_pass))
                             {
@@ -986,7 +1022,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                                           roleDesc = r.role,
                                           userName = u.user_name,
                                           userPass = u.user_pass,
-                                          fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix
+                                          fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
+                                          isChangePassword = isChangePassword
                                       }
                                   )
                                   .Where(o => o.userName.Equals(userName))
@@ -1166,27 +1203,31 @@ namespace accAfpslaiEmvSrvc.Controllers
                         afpslai_emvEntities ent = new afpslai_emvEntities();
 
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                        var user = Newtonsoft.Json.JsonConvert.DeserializeObject<system_user>(objPayload.ToString());
 
-                        int userId = 0;
+                        int userId = user.id;
 
-                        if (objPayload.userId != null) userId = objPayload.userId;
+                        //if (objPayload.userId != null) userId = objPayload.userId;
 
                         if (userId == 0) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
                         else
                         {
                             var dss = ent.dcs_system_setting;
 
-                            var obj = ent.system_user.Where(o => o.id == userId);
-                            if (obj.Count() > 0) return apiResponse(new responseFailedBadRequest { message = "User not found" });
+                            var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
+                            if (obj == null) return apiResponse(new responseFailedBadRequest { message = "User not found" });
                             else
                             {
-                                obj.FirstOrDefault().user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
+
+                                obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
                                 ent.SaveChanges();
 
-                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password is reset", obj.FirstOrDefault().user_name));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password has been reset", obj.user_name));
 
-                                return apiResponse(new responseSuccess { message = "User password is reset" });
+                                return apiResponse(new responseSuccess { message = "User password has been reset" });
+
                             }
+
                         }
                 }
             }
@@ -1222,26 +1263,32 @@ namespace accAfpslaiEmvSrvc.Controllers
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
 
                         int userId = 0;
-                        string userPass = "";
+                        string userOldPass = "";
+                        string userNewPass = "";
 
                         if (objPayload.userId != null) userId = objPayload.userId;
-                        if (objPayload.userPass != null) userPass = objPayload.userPass;
+                        if (objPayload.userOldPass != null) userOldPass = objPayload.userOldPass;
+                        if (objPayload.userNewPass != null) userNewPass = objPayload.userNewPass;
 
-                        if (userId == 0 || userPass == "") return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        if (userId == 0 || userOldPass == "" || userNewPass == "") return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else
                         {
-                            var dss = ent.dcs_system_setting;
+                            //var dss = ent.dcs_system_setting;
 
-                            var obj = ent.system_user.Where(o => o.id == userId);
-                            if (obj.Count() > 0) return apiResponse(new responseFailedBadRequest { message = "User not found" });
+                            var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
+                            if (obj == null) return apiResponse(new responseFailedBadRequest { message = "User not found" });
                             else
                             {
-                                obj.FirstOrDefault().user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userPass);
-                                ent.SaveChanges();
+                                if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(obj.user_pass) == userOldPass)
+                                {
+                                    obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userNewPass);
+                                    ent.SaveChanges();
 
-                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password is reset", obj.FirstOrDefault().user_name));
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password has been changed", obj.user_name));
 
-                                return apiResponse(new responseSuccess { message = "User password is reset" });
+                                    return apiResponse(new responseSuccess { message = "User password has been changed" });
+                                }
+                                else return apiResponse(new response { result = 1, message = "Invalid old password" });
                             }
                         }
                 }
@@ -1556,6 +1603,72 @@ namespace accAfpslaiEmvSrvc.Controllers
             }
         }
 
+        //[Route("~/api/checkIfChangePasswordRequired")]
+        //[HttpPost]
+        //public IHttpActionResult CheckIfChangePasswordRequired(requestPayload reqPayload)
+        //{
+        //    try
+        //    {
+        //        string payload = reqPayload.payload;
+
+        //        var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+        //        switch (validationResponse)
+        //        {
+        //            case (int)System.Net.HttpStatusCode.Unauthorized:
+        //                return apiResponse(new responseFailedUnauthorized());
+        //            case (int)System.Net.HttpStatusCode.BadRequest:
+        //                return apiResponse(new responseFailedBadRequest());
+
+        //            case (int)System.Net.HttpStatusCode.InternalServerError:
+        //                return apiResponse(new responseFailedSystemError());
+        //            default:
+        //                afpslai_emvEntities ent = new afpslai_emvEntities();                        
+
+        //                dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+        //                string cif = "";
+        //                int cardId = 0;
+        //                int memberId = 0;
+        //                string cardNo = "";
+
+        //                if (objPayload.cif != null) cif = objPayload.cif;
+        //                if (objPayload.cardId != null) cardId = objPayload.cardId;
+
+        //                dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+        //                var member = Newtonsoft.Json.JsonConvert.DeserializeObject<member>(objPayload.ToString());
+
+        //                if (string.IsNullOrEmpty(member.cif) || string.IsNullOrEmpty(member.first_name) || string.IsNullOrEmpty(member.last_name)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+        //                //if (address.member_id == null) return apiResponse(new responseFailedBadRequest());
+        //                else
+        //                {
+        //                    //new
+        //                    if (member.print_type_id == 1)
+        //                    {
+        //                        string cif = member.cif;
+        //                        string first_name = member.first_name;
+        //                        string middle_name = member.middle_name;
+        //                        string last_name = member.last_name;
+        //                        string suffix = member.suffix;
+        //                        //int printTypeId = member.print_;
+        //                        var objCheckCif = ent.members.Where(o => o.cif.Equals(cif));
+        //                        var objCheckName = ent.members.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix));
+
+        //                        if (objCheckCif.Count() > 0) return apiResponse(new response { result = 1, message = "Duplicate CIF is not allowed" });
+        //                        else if (objCheckName.Count() > 0) return apiResponse(new response { result = 1, message = "Duplicate Name is not allowed" });
+        //                        else return apiResponse(new responseSuccess());
+        //                    }
+        //                    else return apiResponse(new responseSuccess());
+        //                }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //        return apiResponse(new responseFailedSystemError { obj = ex.Message });
+        //    }
+        //}
+
         [Route("~/api/addCard")]
         [HttpPost]
         public IHttpActionResult AddCard(requestPayload reqPayload)
@@ -1868,7 +1981,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         afpslai_emvEntities ent = new afpslai_emvEntities();
 
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-                        var user = Newtonsoft.Json.JsonConvert.DeserializeObject<system_user>(objPayload.ToString()); ;
+                        var user = Newtonsoft.Json.JsonConvert.DeserializeObject<system_user>(objPayload.ToString());
 
                         if (user.id == 0) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else
@@ -1917,7 +2030,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         afpslai_emvEntities ent = new afpslai_emvEntities();
 
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-                        var assocType = Newtonsoft.Json.JsonConvert.DeserializeObject<associate_type>(objPayload.ToString()); ;
+                        var assocType = Newtonsoft.Json.JsonConvert.DeserializeObject<associate_type>(objPayload.ToString());
 
                         if (string.IsNullOrEmpty(assocType.associateType)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else
@@ -2401,87 +2514,53 @@ namespace accAfpslaiEmvSrvc.Controllers
                     case (int)System.Net.HttpStatusCode.InternalServerError:
                         return apiResponse(new responseFailedSystemError());
                     default:
-                        afpslai_emvEntities ent = new afpslai_emvEntities();
-                        var obj = ent.cps_card_elements.FirstOrDefault();
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                        var cce = Newtonsoft.Json.JsonConvert.DeserializeObject<cps_card_elements>(objPayload.ToString());
 
-                        if (obj == null)
+                        if (string.IsNullOrEmpty(cce.element) || cce.x == null || cce.y == null || cce.width == null || cce.height == null || cce.element_type == null) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         {
-                            cps_card_elements ccePhoto = new cps_card_elements();
-                            ccePhoto.element = "photo";
-                            ccePhoto.x = 100;
-                            ccePhoto.y = 100;
-                            ccePhoto.width = 100;
-                            ccePhoto.height = 100;
-                            ccePhoto.element_type = "image";
+                            string element = cce.element;
+                            afpslai_emvEntities ent = new afpslai_emvEntities();
+                            var obj = ent.cps_card_elements.Where(o => o.element.Equals(element)).FirstOrDefault();
+                            if (obj == null)
+                            {
+                                cce.date_post = DateTime.Now.Date;
+                                cce.time_post = DateTime.Now.TimeOfDay;
+                                cce.last_updated = DateTime.Now;
+                                ent.cps_card_elements.Add(cce);
+                                ent.SaveChanges();
 
-                            cps_card_elements cceMemberSince = new cps_card_elements();
-                            cceMemberSince.element = "memberSince";
-                            cceMemberSince.x = 200;
-                            cceMemberSince.y = 200;
-                            cceMemberSince.width = 100;
-                            cceMemberSince.height = 100;
-                            cceMemberSince.font_name = "Arial";
-                            cceMemberSince.font_size = 12;
-                            cceMemberSince.font_style = 1;
-                            cceMemberSince.element_type = "text";
+                                return apiResponse(new responseSuccessNewRecord());
+                            }
+                            else
+                            {
+                                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                                sb.Append("");
+                                if (obj.x != cce.x) sb.Append(". x changed");
+                                if (obj.y != cce.y) sb.Append(". y changed");
+                                if (obj.height != cce.height) sb.Append(". height changed");
+                                if (obj.width != cce.width) sb.Append(". width changed");
+                                if (obj.font_name != cce.font_name) sb.Append(". font name changed");
+                                if (obj.font_size != cce.font_size) sb.Append(". font size changed");
+                                if (obj.font_style != cce.font_style) sb.Append(". font stype changed");
+                                if (obj.element_type != cce.element_type) sb.Append(". element type changed");
+                                if (sb.ToString() != "") sb.Append(".");
 
-                            cps_card_elements cceValidThru = new cps_card_elements();
-                            cceValidThru.element = "validThru";
-                            cceValidThru.x = 300;
-                            cceValidThru.y = 300;
-                            cceValidThru.width = 100;
-                            cceValidThru.height = 100;
-                            cceValidThru.font_name = "Arial";
-                            cceValidThru.font_size = 12;
-                            cceValidThru.font_style = 1;
-                            cceValidThru.element_type = "text";
+                                obj.x = cce.x;
+                                obj.y = cce.y;
+                                obj.width = cce.width;
+                                obj.height = cce.height;
+                                if (!string.IsNullOrEmpty(cce.font_name)) obj.font_name = cce.font_name;
+                                if (cce.font_size!=null) obj.font_size = cce.font_size;
+                                if (cce.font_style != null) obj.font_style = cce.font_style;
+                                obj.element_type = cce.element_type;
+                                obj.last_updated = DateTime.Now;
+                                ent.SaveChanges();
 
-                            cps_card_elements cceName = new cps_card_elements();
-                            cceName.element = "name";
-                            cceName.x = 400;
-                            cceName.y = 400;
-                            cceName.width = 100;
-                            cceName.height = 100;
-                            cceName.font_name = "Arial";
-                            cceName.font_size = 12;
-                            cceName.font_style = 1;
-                            cceName.element_type = "text";
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", cce.element, sb.ToString()));
 
-                            cps_card_elements cceCif = new cps_card_elements();
-                            cceCif.element = "cif";
-                            cceCif.x = 500;
-                            cceCif.y = 500;
-                            cceCif.width = 100;
-                            cceCif.height = 100;
-                            cceCif.font_name = "Arial";
-                            cceCif.font_size = 12;
-                            cceCif.font_style = 1;
-                            cceCif.element_type = "text";
-
-                            ent.cps_card_elements.Add(ccePhoto);
-                            ent.cps_card_elements.Add(cceMemberSince);
-                            ent.cps_card_elements.Add(cceValidThru);
-                            ent.cps_card_elements.Add(cceName);
-                            ent.cps_card_elements.Add(cceCif);
-                            ent.SaveChanges();
-
-                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Cps card elements are added"));
-
-                            return apiResponse(new responseSuccessNewRecord());
-                        }
-                        else
-                        {
-                            //dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-                            //var dcs_system_setting = Newtonsoft.Json.JsonConvert.DeserializeObject<dcs_system_setting>(objPayload.ToString());
-                            //obj.cif_length = dcs_system_setting.cif_length;
-                            //obj.member_type_assoc_allow_yrs = dcs_system_setting.member_type_assoc_allow_yrs;
-                            //obj.member_type_reg_allow_yrs = dcs_system_setting.member_type_reg_allow_yrs;
-                            //obj.cardname_length = dcs_system_setting.cardname_length;
-                            //ent.SaveChanges();
-
-                            //Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Dcs systsem settings is modified"));
-
-                            return apiResponse(new responseSuccessUpdateRecord());
+                                return apiResponse(new responseSuccessUpdateRecord());
+                            }
                         }
                 }
             }

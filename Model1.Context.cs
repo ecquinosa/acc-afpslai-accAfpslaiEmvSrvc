@@ -26,11 +26,13 @@ namespace accAfpslaiEmvSrvc
         }
     
         public virtual DbSet<address> addresses { get; set; }
+        public virtual DbSet<api_request_log> api_request_log { get; set; }
         public virtual DbSet<associate_type> associate_type { get; set; }
         public virtual DbSet<branch> branches { get; set; }
         public virtual DbSet<card> cards { get; set; }
         public virtual DbSet<civil_status> civil_status { get; set; }
         public virtual DbSet<country> countries { get; set; }
+        public virtual DbSet<cps_card_elements> cps_card_elements { get; set; }
         public virtual DbSet<dcs_system_setting> dcs_system_setting { get; set; }
         public virtual DbSet<member> members { get; set; }
         public virtual DbSet<membership_status> membership_status { get; set; }
@@ -41,7 +43,5 @@ namespace accAfpslaiEmvSrvc
         public virtual DbSet<system_log> system_log { get; set; }
         public virtual DbSet<system_role> system_role { get; set; }
         public virtual DbSet<system_user> system_user { get; set; }
-        public virtual DbSet<cps_card_elements> cps_card_elements { get; set; }
-        public virtual DbSet<api_request_log> api_request_log { get; set; }
     }
 }

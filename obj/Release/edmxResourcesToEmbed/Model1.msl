@@ -74,6 +74,7 @@
     <EntitySetMapping Name="dcs_system_setting">
       <EntityTypeMapping TypeName="afpslai_emvModel.dcs_system_setting">
         <MappingFragment StoreEntitySet="dcs_system_setting">
+          <ScalarProperty Name="system_default_password" ColumnName="system_default_password" />
           <ScalarProperty Name="last_updated" ColumnName="last_updated" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="cif_length" ColumnName="cif_length" />
@@ -206,6 +207,7 @@
     <EntitySetMapping Name="system_user">
       <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
         <MappingFragment StoreEntitySet="system_user">
+          <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="user_name" ColumnName="user_name" />
           <ScalarProperty Name="user_pass" ColumnName="user_pass" />

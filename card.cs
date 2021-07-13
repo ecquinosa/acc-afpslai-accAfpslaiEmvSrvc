@@ -17,10 +17,10 @@ namespace accAfpslaiEmvSrvc
         public int id { get; set; }
         public Nullable<int> member_id { get; set; }
         public string cardNo { get; set; }
+        public Nullable<System.DateTime> date_CMS { get; set; }
+        public Nullable<System.DateTime> date_CBS { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
         public Nullable<bool> is_cancel { get; set; }
-        public Nullable<System.DateTime> date_CMS { get; set; }
-        public Nullable<System.DateTime> date_CBS { get; set; }
     }
 }

@@ -1,0 +1,8 @@
+2021-07-13 18:53:45.6933|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 18:56:14.3177|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 19:02:50.9386|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 19:06:36.1312|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 19:12:07.2025|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 19:16:34.7413|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'cps_card_elements'
+2021-07-13 19:25:02.0682|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'last_name'
+2021-07-13 19:25:50.6993|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCPSCardElements|'accAfpslaiEmvSrvc.cps_card_elements' does not contain a definition for 'last_name'

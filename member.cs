@@ -40,10 +40,10 @@ namespace accAfpslaiEmvSrvc
         public string online_reference_number { get; set; }
         public string card_name { get; set; }
         public string email { get; set; }
+        public Nullable<int> print_type_id { get; set; }
+        public Nullable<int> recard_reason_id { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
         public Nullable<bool> is_cancel { get; set; }
-        public Nullable<int> print_type_id { get; set; }
-        public Nullable<int> recard_reason_id { get; set; }
     }
 }
