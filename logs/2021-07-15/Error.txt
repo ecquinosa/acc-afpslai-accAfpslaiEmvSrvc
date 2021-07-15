@@ -1,0 +1,9 @@
+2021-07-15 19:26:23.0341|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+2021-07-15 19:33:05.5595|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PushCMSData|Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+2021-07-15 19:36:14.1392|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 19:38:49.1211|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 19:40:30.0054|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 19:43:45.4971|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 19:45:42.8866|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 19:56:08.5124|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid
+2021-07-15 20:01:22.5925|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117144 to CMS. 07 Parameter invalid

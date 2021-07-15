@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="address">
           <Key>
             <PropertyRef Name="id" />
@@ -31,7 +31,7 @@
           <Property Name="api_name" Type="varchar" MaxLength="50" />
           <Property Name="member_id" Type="int4" />
           <Property Name="card_id" Type="int4" />
-          <Property Name="request" Type="varchar" MaxLength="200" />
+          <Property Name="request" Type="varchar" MaxLength="300" />
           <Property Name="response" Type="varchar" MaxLength="1000" />
           <Property Name="is_success" Type="bool" />
           <Property Name="date_post" Type="date" />
@@ -264,8 +264,7 @@
           <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="afpslai_emvModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -295,7 +294,7 @@
           <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="member_id" Type="Int32" />
           <Property Name="card_id" Type="Int32" />
-          <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="request" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="is_success" Type="Boolean" />
           <Property Name="date_post" Type="DateTime" Precision="0" />

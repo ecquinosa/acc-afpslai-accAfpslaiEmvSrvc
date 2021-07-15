@@ -26,7 +26,7 @@
     <Property Name="api_name" Type="varchar" MaxLength="50" />
     <Property Name="member_id" Type="int4" />
     <Property Name="card_id" Type="int4" />
-    <Property Name="request" Type="varchar" MaxLength="200" />
+    <Property Name="request" Type="varchar" MaxLength="300" />
     <Property Name="response" Type="varchar" MaxLength="1000" />
     <Property Name="is_success" Type="bool" />
     <Property Name="date_post" Type="date" />

@@ -66,7 +66,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -99,12 +99,22 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
                         {
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
+                            afpslai_emvEntities ent = new afpslai_emvEntities();
+                            int cardId = cbsCms.cardId;
+                            var card = ent.cards.Where(o => (o.id.Equals(cardId))).FirstOrDefault();
+                            if (card != null)
+                            {
+                                card.date_CMS = DateTime.Now;
+                                ent.SaveChanges();
+                            }
+                            
                             return apiResponse(new responseSuccess());
                         }
                         else
                         {
                             api_request_log arl = new api_request_log();
                             arl.card_id = cbsCms.cardId;
+                            arl.member_id = cbsCms.memberId;
                             arl.api_owner = "cms";
                             arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
                             arl.is_success = false;
@@ -113,15 +123,15 @@ namespace accAfpslaiEmvSrvc.Controllers
                             Helpers.Utilities.SaveApiRequestLog(arl);
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
-                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, obj = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
-                            else return apiResponse(new responseSuccess());
+                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
+                            else return apiResponse(new responseSuccess { message = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
                         }
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new responseFailedSystemError { message = ex.Message });
                 else return apiResponse(new responseSuccess());
             }
         }
@@ -222,7 +232,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -265,13 +275,13 @@ namespace accAfpslaiEmvSrvc.Controllers
                         //arl.response = "CBS push response";
                         //Helpers.Utilities.SaveApiRequestLog(arl);
 
-                        return apiResponse(new response { result = 0, obj = string.Format("Success receiving mid {0} and card no {1}", cbsCms.cif, cardNo) });
+                        return apiResponse(new response { result = 0, message = string.Format("Success receiving mid {0} and card no {1}", cbsCms.cif, cardNo) });
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -305,7 +315,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -339,7 +349,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -372,7 +382,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
 
         }
@@ -393,7 +403,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -428,7 +438,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -460,7 +470,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -493,7 +503,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -526,7 +536,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -559,7 +569,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -592,7 +602,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -677,7 +687,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -710,7 +720,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -743,7 +753,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -811,7 +821,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -876,6 +886,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                                                    gender = m.gender,
                                                    membership_date = m.membership_date,
                                                    branchName = b == null ? string.Empty : b.branchName,
+                                                   mobileNo = m.mobile_nos,
+                                                   terminalId = m.terminal_id,
                                                    mDatePost = m.date_post,
                                                    cDatePost = c == null ? string.Empty : c.date_post.ToString(),
                                                    cTimePost = c == null ? string.Empty : c.time_post.ToString(),
@@ -909,10 +921,12 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
                                     cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
                                     cfp.branch_issued = memberCard.branchName;
+                                    cfp.mobileNo = memberCard.mobileNo;
+                                    cfp.terminalId = memberCard.terminalId;
                                     if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
                                     cfp.base64Photo = base64Photo;
                                 }
-                                else return apiResponse(new response { result = 1, obj = "Photo not found" });
+                                else return apiResponse(new response { result = 1, message = "Photo not found" });
                             }
 
                             return apiResponse(new response { result = 0, obj = cfp });
@@ -922,7 +936,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -977,7 +991,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1181,7 +1195,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1239,7 +1253,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1301,7 +1315,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1365,7 +1379,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1394,7 +1408,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1415,7 +1429,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1436,7 +1450,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1493,7 +1507,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1548,7 +1562,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1604,7 +1618,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1670,7 +1684,7 @@ namespace accAfpslaiEmvSrvc.Controllers
         //    catch (Exception ex)
         //    {
         //        logger.Error(ex.Message);
-        //        return apiResponse(new responseFailedSystemError { obj = ex.Message });
+        //        return apiResponse(new responseFailedSystemError { message = ex.Message });
         //    }
         //}
 
@@ -1716,7 +1730,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1795,7 +1809,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1841,7 +1855,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1911,7 +1925,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -1959,7 +1973,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2007,7 +2021,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2077,7 +2091,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2127,7 +2141,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2196,7 +2210,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2246,7 +2260,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2315,7 +2329,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2365,7 +2379,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2434,7 +2448,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2495,7 +2509,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2572,7 +2586,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2601,7 +2615,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2670,7 +2684,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2718,7 +2732,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2787,7 +2801,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2835,7 +2849,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2904,7 +2918,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
@@ -2952,7 +2966,7 @@ namespace accAfpslaiEmvSrvc.Controllers
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                return apiResponse(new responseFailedSystemError { obj = ex.Message });
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
 
