@@ -25,7 +25,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\PHOTO")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Photo")]
         public string PhotoRepo {
             get {
                 return ((string)(this["PhotoRepo"]));
@@ -34,7 +34,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\MEMBER")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Member Data")]
         public string MemberDataRepo {
             get {
                 return ((string)(this["MemberDataRepo"]));
@@ -61,7 +61,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\LOGS")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Logs")]
         public string LogRepo {
             get {
                 return ((string)(this["LogRepo"]));

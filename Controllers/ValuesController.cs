@@ -54,7 +54,12 @@ namespace accAfpslaiEmvSrvc.Controllers
                             afpslai_emvEntities ent = new afpslai_emvEntities();
                             var obj = ent.online_registration.Where(o => (o.cif.Equals(cif)) || (o.reference_number.Equals(reference_number)));
 
-                            return apiResponse(new response { result = 0, obj = obj });
+                            var payloadAuthEncrypted = reqPayload.authentication;
+                            var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
+
+                            if (payloadAuth.branch!=obj.FirstOrDefault().branch) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid at " + obj.FirstOrDefault().branch  + " branch"});
+                            else if (DateTime.Now.Date != obj.FirstOrDefault().date_captured) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid on " + Convert.ToDateTime(obj.FirstOrDefault().date_captured).ToString("MM/dd/yyyy") });
+                            else return apiResponse(new response { result = 0, obj = obj });
                         }
                 }
             }

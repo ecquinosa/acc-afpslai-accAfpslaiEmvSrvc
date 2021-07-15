@@ -190,6 +190,7 @@
           <ScalarProperty Name="cca_no" ColumnName="cca_no" />
           <ScalarProperty Name="reference_number" ColumnName="reference_number" />
           <ScalarProperty Name="qr_code" ColumnName="qr_code" />
+          <ScalarProperty Name="branch" ColumnName="branch" />
           <ScalarProperty Name="date_schedule" ColumnName="date_schedule" />
           <ScalarProperty Name="time_schedule" ColumnName="time_schedule" />
           <ScalarProperty Name="date_captured" ColumnName="date_captured" />

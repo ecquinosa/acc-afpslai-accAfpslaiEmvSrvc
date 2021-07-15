@@ -17,6 +17,21 @@
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="is_cancel" Type="Boolean" />
   </EntityType>
+  <EntityType Name="api_request_log">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="api_owner" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="member_id" Type="Int32" />
+    <Property Name="card_id" Type="Int32" />
+    <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+    <Property Name="is_success" Type="Boolean" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+  </EntityType>
   <EntityType Name="associate_type">
     <Key>
       <PropertyRef Name="id" />
@@ -41,11 +56,11 @@
     <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="member_id" Type="Int32" />
     <Property Name="cardNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="date_CMS" Type="DateTime" Precision="6" />
+    <Property Name="date_CBS" Type="DateTime" Precision="6" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="is_cancel" Type="Boolean" />
-    <Property Name="date_CMS" Type="DateTime" Precision="6" />
-    <Property Name="date_CBS" Type="DateTime" Precision="6" />
   </EntityType>
   <EntityType Name="civil_status">
     <Key>
@@ -64,17 +79,35 @@
     <Property Name="code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
     <Property Name="is_deleted" Type="Boolean" />
   </EntityType>
+  <EntityType Name="cps_card_elements">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="element" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="x" Type="Int32" />
+    <Property Name="y" Type="Int32" />
+    <Property Name="width" Type="Int32" />
+    <Property Name="height" Type="Int32" />
+    <Property Name="font_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="font_size" Type="Int32" />
+    <Property Name="font_style" Type="Int32" />
+    <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="date_post" Type="DateTime" Precision="0" />
+    <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="last_updated" Type="DateTime" Precision="6" />
+  </EntityType>
   <EntityType Name="dcs_system_setting">
     <Key>
       <PropertyRef Name="id" />
     </Key>
-    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="cif_length" Type="Int32" />
     <Property Name="member_type_assoc_allow_yrs" Type="Int32" />
     <Property Name="member_type_reg_allow_yrs" Type="Int32" />
     <Property Name="cardname_length" Type="Int32" />
-    <Property Name="last_updated" Type="DateTime" Precision="6" />
     <Property Name="system_default_password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="last_updated" Type="DateTime" Precision="6" />
   </EntityType>
   <EntityType Name="member">
     <Key>
@@ -106,11 +139,11 @@
     <Property Name="online_reference_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
     <Property Name="card_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="print_type_id" Type="Int32" />
+    <Property Name="recard_reason_id" Type="Int32" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
     <Property Name="is_cancel" Type="Boolean" />
-    <Property Name="print_type_id" Type="Int32" />
-    <Property Name="recard_reason_id" Type="Int32" />
   </EntityType>
   <EntityType Name="membership_status">
     <Key>
@@ -201,17 +234,19 @@
     <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
     <Property Name="role_id" Type="Int32" />
     <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_deleted" Type="Boolean" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
-    <Property Name="is_deleted" Type="Boolean" />
   </EntityType>
   <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="addresses" EntityType="Self.address" />
+    <EntitySet Name="api_request_log" EntityType="Self.api_request_log" />
     <EntitySet Name="associate_type" EntityType="Self.associate_type" />
     <EntitySet Name="branches" EntityType="Self.branch" />
     <EntitySet Name="cards" EntityType="Self.card" />
     <EntitySet Name="civil_status" EntityType="Self.civil_status" />
     <EntitySet Name="countries" EntityType="Self.country" />
+    <EntitySet Name="cps_card_elements" EntityType="Self.cps_card_elements" />
     <EntitySet Name="dcs_system_setting" EntityType="Self.dcs_system_setting" />
     <EntitySet Name="members" EntityType="Self.member" />
     <EntitySet Name="membership_status" EntityType="Self.membership_status" />
@@ -222,40 +257,5 @@
     <EntitySet Name="system_log" EntityType="Self.system_log" />
     <EntitySet Name="system_role" EntityType="Self.system_role" />
     <EntitySet Name="system_user" EntityType="Self.system_user" />
-    <EntitySet Name="cps_card_elements" EntityType="afpslai_emvModel.cps_card_elements" />
-    <EntitySet Name="api_request_log" EntityType="afpslai_emvModel.api_request_log" />
   </EntityContainer>
-  <EntityType Name="cps_card_elements">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="element" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
-    <Property Name="x" Type="Int32" />
-    <Property Name="y" Type="Int32" />
-    <Property Name="width" Type="Int32" />
-    <Property Name="height" Type="Int32" />
-    <Property Name="font_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="font_size" Type="Int32" />
-    <Property Name="font_style" Type="Int32" />
-    <Property Name="date_post" Type="DateTime" Precision="0" />
-    <Property Name="time_post" Type="Time" Precision="6" />
-    <Property Name="last_updated" Type="DateTime" Precision="6" />
-    <Property Name="element_type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-  </EntityType>
-  <EntityType Name="api_request_log">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="member_id" Type="Int32" />
-    <Property Name="card_id" Type="Int32" />
-    <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-    <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-    <Property Name="is_success" Type="Boolean" />
-    <Property Name="date_post" Type="DateTime" Precision="0" />
-    <Property Name="time_post" Type="Time" Precision="6" />
-    <Property Name="api_owner" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-    <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-  </EntityType>
 </Schema>

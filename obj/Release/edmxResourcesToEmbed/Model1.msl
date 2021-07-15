@@ -19,6 +19,22 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="api_request_log">
+      <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
+        <MappingFragment StoreEntitySet="api_request_log">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="api_owner" ColumnName="api_owner" />
+          <ScalarProperty Name="api_name" ColumnName="api_name" />
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
+          <ScalarProperty Name="card_id" ColumnName="card_id" />
+          <ScalarProperty Name="request" ColumnName="request" />
+          <ScalarProperty Name="response" ColumnName="response" />
+          <ScalarProperty Name="is_success" ColumnName="is_success" />
+          <ScalarProperty Name="date_post" ColumnName="date_post" />
+          <ScalarProperty Name="time_post" ColumnName="time_post" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="associate_type">
       <EntityTypeMapping TypeName="afpslai_emvModel.associate_type">
         <MappingFragment StoreEntitySet="associate_type">
@@ -41,11 +57,11 @@
     <EntitySetMapping Name="cards">
       <EntityTypeMapping TypeName="afpslai_emvModel.card">
         <MappingFragment StoreEntitySet="card">
-          <ScalarProperty Name="date_CBS" ColumnName="date_CBS" />
-          <ScalarProperty Name="date_CMS" ColumnName="date_CMS" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="member_id" ColumnName="member_id" />
           <ScalarProperty Name="cardNo" ColumnName="cardNo" />
+          <ScalarProperty Name="date_CMS" ColumnName="date_CMS" />
+          <ScalarProperty Name="date_CBS" ColumnName="date_CBS" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />
           <ScalarProperty Name="is_cancel" ColumnName="is_cancel" />
@@ -71,24 +87,41 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="cps_card_elements">
+      <EntityTypeMapping TypeName="afpslai_emvModel.cps_card_elements">
+        <MappingFragment StoreEntitySet="cps_card_elements">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="element" ColumnName="element" />
+          <ScalarProperty Name="x" ColumnName="x" />
+          <ScalarProperty Name="y" ColumnName="y" />
+          <ScalarProperty Name="width" ColumnName="width" />
+          <ScalarProperty Name="height" ColumnName="height" />
+          <ScalarProperty Name="font_name" ColumnName="font_name" />
+          <ScalarProperty Name="font_size" ColumnName="font_size" />
+          <ScalarProperty Name="font_style" ColumnName="font_style" />
+          <ScalarProperty Name="element_type" ColumnName="element_type" />
+          <ScalarProperty Name="date_post" ColumnName="date_post" />
+          <ScalarProperty Name="time_post" ColumnName="time_post" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="dcs_system_setting">
       <EntityTypeMapping TypeName="afpslai_emvModel.dcs_system_setting">
         <MappingFragment StoreEntitySet="dcs_system_setting">
-          <ScalarProperty Name="system_default_password" ColumnName="system_default_password" />
-          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="cif_length" ColumnName="cif_length" />
           <ScalarProperty Name="member_type_assoc_allow_yrs" ColumnName="member_type_assoc_allow_yrs" />
           <ScalarProperty Name="member_type_reg_allow_yrs" ColumnName="member_type_reg_allow_yrs" />
           <ScalarProperty Name="cardname_length" ColumnName="cardname_length" />
+          <ScalarProperty Name="system_default_password" ColumnName="system_default_password" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="members">
       <EntityTypeMapping TypeName="afpslai_emvModel.member">
         <MappingFragment StoreEntitySet="member">
-          <ScalarProperty Name="recard_reason_id" ColumnName="recard_reason_id" />
-          <ScalarProperty Name="print_type_id" ColumnName="print_type_id" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="cif" ColumnName="cif" />
           <ScalarProperty Name="last_name" ColumnName="last_name" />
@@ -115,6 +148,8 @@
           <ScalarProperty Name="online_reference_number" ColumnName="online_reference_number" />
           <ScalarProperty Name="card_name" ColumnName="card_name" />
           <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="print_type_id" ColumnName="print_type_id" />
+          <ScalarProperty Name="recard_reason_id" ColumnName="recard_reason_id" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />
           <ScalarProperty Name="is_cancel" ColumnName="is_cancel" />
@@ -207,7 +242,6 @@
     <EntitySetMapping Name="system_user">
       <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
         <MappingFragment StoreEntitySet="system_user">
-          <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="user_name" ColumnName="user_name" />
           <ScalarProperty Name="user_pass" ColumnName="user_pass" />
@@ -217,43 +251,9 @@
           <ScalarProperty Name="suffix" ColumnName="suffix" />
           <ScalarProperty Name="role_id" ColumnName="role_id" />
           <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="cps_card_elements">
-      <EntityTypeMapping TypeName="afpslai_emvModel.cps_card_elements">
-        <MappingFragment StoreEntitySet="cps_card_elements">
-          <ScalarProperty Name="element_type" ColumnName="element_type" />
-          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
-          <ScalarProperty Name="time_post" ColumnName="time_post" />
-          <ScalarProperty Name="date_post" ColumnName="date_post" />
-          <ScalarProperty Name="font_style" ColumnName="font_style" />
-          <ScalarProperty Name="font_size" ColumnName="font_size" />
-          <ScalarProperty Name="font_name" ColumnName="font_name" />
-          <ScalarProperty Name="height" ColumnName="height" />
-          <ScalarProperty Name="width" ColumnName="width" />
-          <ScalarProperty Name="y" ColumnName="y" />
-          <ScalarProperty Name="x" ColumnName="x" />
-          <ScalarProperty Name="element" ColumnName="element" />
-          <ScalarProperty Name="id" ColumnName="id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="api_request_log">
-      <EntityTypeMapping TypeName="afpslai_emvModel.api_request_log">
-        <MappingFragment StoreEntitySet="api_request_log">
-          <ScalarProperty Name="api_name" ColumnName="api_name" />
-          <ScalarProperty Name="api_owner" ColumnName="api_owner" />
-          <ScalarProperty Name="time_post" ColumnName="time_post" />
-          <ScalarProperty Name="date_post" ColumnName="date_post" />
-          <ScalarProperty Name="is_success" ColumnName="is_success" />
-          <ScalarProperty Name="response" ColumnName="response" />
-          <ScalarProperty Name="request" ColumnName="request" />
-          <ScalarProperty Name="card_id" ColumnName="card_id" />
-          <ScalarProperty Name="member_id" ColumnName="member_id" />
-          <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

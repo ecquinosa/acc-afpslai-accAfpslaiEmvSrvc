@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PublishTargetUrl>C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\bin\app.publish\</_PublishTargetUrl>
-    <History>True|2021-07-10T12:53:35.8304868Z;</History>
+    <History>True|2021-07-14T02:13:57.2300332Z;True|2021-07-10T20:53:35.8304868+08:00;</History>
   </PropertyGroup>
   <ItemGroup>
     <File Include="Areas/HelpPage/HelpPage.css">
@@ -78,16 +78,16 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>07/06/2021 18:13:16</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvObjct.dll">
-      <publishTime>07/10/2021 20:53:31</publishTime>
+      <publishTime>07/14/2021 10:13:54</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvObjct.pdb">
-      <publishTime>07/10/2021 20:53:31</publishTime>
+      <publishTime>07/14/2021 10:13:54</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvSrvc.dll">
-      <publishTime>07/10/2021 20:53:33</publishTime>
+      <publishTime>07/14/2021 10:13:56</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvSrvc.pdb">
-      <publishTime>07/10/2021 20:53:33</publishTime>
+      <publishTime>07/14/2021 10:13:56</publishTime>
     </File>
     <File Include="bin/Antlr3.Runtime.dll">
       <publishTime>06/19/2021 16:53:13</publishTime>
@@ -399,7 +399,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>06/19/2021 16:53:12</publishTime>
     </File>
     <File Include="Model1.edmx.diagram">
-      <publishTime>06/24/2021 08:53:16</publishTime>
+      <publishTime>07/13/2021 19:10:11</publishTime>
     </File>
     <File Include="NLog.config">
       <publishTime>06/19/2021 16:53:12</publishTime>
@@ -447,7 +447,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>06/19/2021 16:53:12</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/10/2021 20:53:34</publishTime>
+      <publishTime>07/14/2021 10:13:56</publishTime>
     </File>
   </ItemGroup>
 </Project>

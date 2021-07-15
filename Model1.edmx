@@ -183,8 +183,9 @@
           <Property Name="cca_no" Type="varchar" MaxLength="50" />
           <Property Name="reference_number" Type="varchar" MaxLength="20" />
           <Property Name="qr_code" Type="varchar" MaxLength="100" />
+          <Property Name="branch" Type="varchar" MaxLength="100" />
           <Property Name="date_schedule" Type="date" />
-          <Property Name="time_schedule" Type="time" Precision="6" />
+          <Property Name="time_schedule" Type="varchar" MaxLength="100" />
           <Property Name="date_captured" Type="date" />
           <Property Name="reference_id" Type="int4" />
           <Property Name="date_post" Type="date" />
@@ -446,8 +447,9 @@
           <Property Name="cca_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="reference_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="qr_code" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="branch" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="date_schedule" Type="DateTime" Precision="0" />
-          <Property Name="time_schedule" Type="Time" Precision="6" />
+          <Property Name="time_schedule" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="date_captured" Type="DateTime" Precision="0" />
           <Property Name="reference_id" Type="Int32" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
@@ -721,6 +723,7 @@
                 <ScalarProperty Name="cca_no" ColumnName="cca_no" />
                 <ScalarProperty Name="reference_number" ColumnName="reference_number" />
                 <ScalarProperty Name="qr_code" ColumnName="qr_code" />
+                <ScalarProperty Name="branch" ColumnName="branch" />
                 <ScalarProperty Name="date_schedule" ColumnName="date_schedule" />
                 <ScalarProperty Name="time_schedule" ColumnName="time_schedule" />
                 <ScalarProperty Name="date_captured" ColumnName="date_captured" />

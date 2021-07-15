@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="PhotoRepo" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\PHOTO</Value>
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\Photo</Value>
     </Setting>
     <Setting Name="MemberDataRepo" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\MEMBER</Value>
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\Member Data</Value>
     </Setting>
     <Setting Name="CBS_CardNo_Req" Type="System.String" Scope="Application">
       <Value Profile="(Default)">0</Value>
@@ -15,7 +15,7 @@
       <Value Profile="(Default)">gR3@aTDaEm0n!</Value>
     </Setting>
     <Setting Name="LogRepo" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\LOGS</Value>
+      <Value Profile="(Default)">D:\WORK\AFPSLAI\Project April 2021\SERVER\Logs</Value>
     </Setting>
     <Setting Name="WiseCard_cardBindCifNo_Url" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://wisecard.allcardtech.com.ph/rest/card/cardBindCifNo</Value>

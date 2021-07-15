@@ -27,8 +27,9 @@ namespace accAfpslaiEmvSrvc
         public string cca_no { get; set; }
         public string reference_number { get; set; }
         public string qr_code { get; set; }
+        public string branch { get; set; }
         public Nullable<System.DateTime> date_schedule { get; set; }
-        public Nullable<System.TimeSpan> time_schedule { get; set; }
+        public string time_schedule { get; set; }
         public Nullable<System.DateTime> date_captured { get; set; }
         public Nullable<int> reference_id { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
