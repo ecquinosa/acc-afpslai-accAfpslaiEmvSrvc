@@ -57,7 +57,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             var payloadAuthEncrypted = reqPayload.authentication;
                             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
-                            if (payloadAuth.branch!=obj.FirstOrDefault().branch) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid at " + obj.FirstOrDefault().branch  + " branch"});
+                            if (payloadAuth.branch != obj.FirstOrDefault().branch) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid at " + obj.FirstOrDefault().branch + " branch" });
                             else if (DateTime.Now.Date != obj.FirstOrDefault().date_captured) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid on " + Convert.ToDateTime(obj.FirstOrDefault().date_captured).ToString("MM/dd/yyyy") });
                             else return apiResponse(new response { result = 0, obj = obj });
                         }
@@ -107,7 +107,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 card.date_CMS = DateTime.Now;
                                 ent.SaveChanges();
                             }
-                            
+
                             return apiResponse(new responseSuccess());
                         }
                         else
@@ -433,6 +433,143 @@ namespace accAfpslaiEmvSrvc.Controllers
                         var obj = ent.associate_type.Where(o => o.is_deleted == false);
 
                         return apiResponse(new response { result = 0, obj = obj });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/getMembersPrintingTypeSummary")]
+        [HttpPost]
+        public IHttpActionResult GetMembersPrintingTypeSummary(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        DateTime? startDate = null;
+                        DateTime? endDate = null;
+                        string branch = "";
+
+                        if (objPayload.startDate != null) startDate = objPayload.startDate;
+                        if (objPayload.endDate != null) endDate = objPayload.endDate;
+                        if (objPayload.branch != null) branch = objPayload.branch;
+
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                        var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
+
+                        var start = startDate;
+                        var end = endDate;
+                        int branchId = 0;
+                        if (b != null) branchId = b.id;
+
+                        var obj = from m in ent.members
+                          where m.is_cancel == false && m.date_post >= start && m.date_post <= end
+                          group m by m.date_post into g
+                          select new
+                          {
+                              DatePost = g.Key,
+                              NewCards = g.Count(x => x.print_type_id == 1 && (branchId == 0 || branchId == x.branch_id)),
+                              ReplacedCards = g.Count(x => x.print_type_id == 2 && (branchId == 0 || branchId == x.branch_id))
+                          };
+
+                        var newResults = (from r in obj.ToList()
+                                         select new
+                                         {
+                                             CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
+                                             NewCards = r.NewCards,
+                                             ReplacedCards = r.ReplacedCards,
+                                             Total = r.NewCards + r.ReplacedCards
+                                         }).Where(o => o.Total > 0).ToList();
+
+                        return apiResponse(new response { result = 0, obj = newResults });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/getMembersRecardReasonSummary")]
+        [HttpPost]
+        public IHttpActionResult GetMembersRecardReasonSummary(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        DateTime? startDate = null;
+                        DateTime? endDate = null;
+                        string branch = "";
+
+                        if (objPayload.startDate != null) startDate = objPayload.startDate;
+                        if (objPayload.endDate != null) endDate = objPayload.endDate;
+                        if (objPayload.branch != null) branch = objPayload.branch;
+
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                        var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
+
+                        var start = startDate;
+                        var end = endDate;
+                        int branchId = 0;
+                        if (b != null) branchId = b.id;
+
+                        var obj = from m in ent.members
+                                  where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= start && m.date_post <= end
+                                  group m by m.date_post into g
+                                  select new
+                                  {
+                                      DatePost = g.Key,
+                                      Lost = g.Count(x => x.recard_reason_id == 1 && (branchId == 0 || branchId == x.branch_id)),
+                                      TornDamaged = g.Count(x => x.recard_reason_id == 2 && (branchId == 0 || branchId == x.branch_id)),
+                                      IncorrectDetails = g.Count(x => x.recard_reason_id == 3 && (branchId == 0 || branchId == x.branch_id))
+                                  };
+
+
+                        var newResults = (from r in obj.ToList()
+                                         select new
+                                         {
+                                             CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
+                                             Lost = r.Lost,
+                                             TornDamaged = r.TornDamaged,
+                                             IncorrectDetails = r.IncorrectDetails,
+                                             Total = r.Lost + r.TornDamaged + r.IncorrectDetails
+                                         }).Where(o => o.Total > 0).ToList();
+
+                        return apiResponse(new response { result = 0, obj = newResults });
                 }
             }
             catch (Exception ex)
@@ -816,6 +953,134 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                             return apiResponse(new response { result = 0, obj = memberCard });
                         }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/getMember")]
+        [HttpPost]
+        public IHttpActionResult GetMember(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
+                {
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
+
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        string cif = "";
+                        int memberId = 0;
+                        string branch = "";
+
+                        if (objPayload.cif != null) cif = objPayload.cif;
+                        if (objPayload.memberId != null) memberId = objPayload.memberId;
+                        if (objPayload.branch != null) branch = objPayload.branch;
+
+                        //if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
+                        //else
+                        //{
+                        var members = (from m in ent.members
+                                       join c in ent.cards on m.id equals c.member_id into table1
+                                       from c in table1.DefaultIfEmpty()
+                                       join b in ent.branches on m.branch_id equals b.id into table2
+                                       from b in table2.DefaultIfEmpty()
+                                       join a in ent.addresses on m.id equals a.member_id into table3
+                                       from a in table3.DefaultIfEmpty()
+                                       join cv in ent.civil_status on m.civil_status_id equals cv.id into table4
+                                       from cv in table4.DefaultIfEmpty()
+                                       join mt in ent.membership_type on m.membership_type_id equals mt.id into table5
+                                       from mt in table5.DefaultIfEmpty()
+                                       join ms in ent.membership_status on m.membership_status_id equals ms.id into table6
+                                       from ms in table6.DefaultIfEmpty()
+                                       join at in ent.associate_type on m.principal_associate_type_id equals at.id into table7
+                                       from at in table7.DefaultIfEmpty()
+                                       join u in ent.system_user on m.user_id equals u.id into table8
+                                       from u in table8.DefaultIfEmpty()
+                                       join pt in ent.print_type on m.print_type_id equals pt.id into table9
+                                       from pt in table9.DefaultIfEmpty()
+                                       join rr in ent.recard_reason on m.recard_reason_id equals rr.id into table10
+                                       from rr in table10.DefaultIfEmpty()
+                                       join cntry in ent.countries on a.country_id equals cntry.id into table11
+                                       from cntry in table11.DefaultIfEmpty()
+                                       where m.is_cancel == false && c.is_cancel == false
+                                       select new
+                                       {
+                                           memberId = m.id,
+                                           cif = m.cif,
+                                           lastName = m.last_name,
+                                           firstName = m.first_name,
+                                           middleName = m.middle_name,
+                                           suffix = m.suffix,
+                                           gender = m.gender,
+                                           birthDate = m.date_birth,
+                                           civilStatusId = m.civil_status_id,
+                                           civilStatus = cv.civilStatus,
+                                           membershipTypeId = m.membership_type_id,
+                                           membershipType = mt.membershipType,
+                                           membershipStatusId = m.membership_status_id,
+                                           membershipStatus = ms.membershipStatus,
+                                           membershipDate = m.membership_date,
+                                           contactNos = m.contact_nos,
+                                           mobileNos = m.mobile_nos,
+                                           emergencyContactName = m.emergency_contact_name,
+                                           emergencyContactNos = m.emergency_contact_nos,
+                                           principalAssociateTypeId = m.principal_associate_type_id,
+                                           principalAssociateType = at.associateType,
+                                           principalCif = m.principal_cif,
+                                           principalName = m.principal_name,
+                                           ccaNo = m.cca_no,
+                                           userId = m.user_id,
+                                           userName = u.user_name,
+                                           terminalId = m.terminal_id,
+                                           branchId = m.branch_id,
+                                           branch = b.branchName,
+                                           onlineReferenceNumber = m.online_reference_number,
+                                           cardName = m.card_name,
+                                           email = m.email,
+                                           printTypeId = m.print_type_id,
+                                           printType = pt.printType,
+                                           recardReasonId = m.recard_reason_id,
+                                           recardReason = rr.recardReason,
+                                           mDatePost = m.date_post,
+                                           isCancel = m.is_cancel,
+                                           address1 = a.address1,
+                                           address2 = a.address2,
+                                           address3 = a.address3,
+                                           city = a.city,
+                                           province = a.province,
+                                           countryId = a.country_id,
+                                           country = cntry.countryName,
+                                           zipCode = a.zipcode,
+                                           cardNo = c.cardNo,
+                                           dateCMS = c.date_CMS,
+                                           dateCBS = c.date_CBS,
+                                           cDatePost = c.date_post
+                                       })
+                                       .Where(t => memberId == 0 || memberId == t.memberId)
+                                       .Where(t => cif == "" || cif == t.cif)
+                                       .Where(t => branch == "" || branch == t.branch)
+                                       .ToList();
+
+                        return apiResponse(new response { result = 0, obj = members });
+                        //}
                 }
             }
             catch (Exception ex)
@@ -2570,7 +2835,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 obj.width = cce.width;
                                 obj.height = cce.height;
                                 if (!string.IsNullOrEmpty(cce.font_name)) obj.font_name = cce.font_name;
-                                if (cce.font_size!=null) obj.font_size = cce.font_size;
+                                if (cce.font_size != null) obj.font_size = cce.font_size;
                                 if (cce.font_style != null) obj.font_style = cce.font_style;
                                 obj.element_type = cce.element_type;
                                 obj.last_updated = DateTime.Now;
