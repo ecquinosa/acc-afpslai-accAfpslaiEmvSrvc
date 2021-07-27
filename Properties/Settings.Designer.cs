@@ -85,5 +85,23 @@ namespace accAfpslaiEmvSrvc.Properties {
                 return ((bool)(this["IsEnforcePMS"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public short UserPassMinLength {
+            get {
+                return ((short)(this["UserPassMinLength"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public short UserNameMaxLength {
+            get {
+                return ((short)(this["UserNameMaxLength"]));
+            }
+        }
     }
 }

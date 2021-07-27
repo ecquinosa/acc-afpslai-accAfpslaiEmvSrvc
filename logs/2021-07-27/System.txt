@@ -1,0 +1,1 @@
+2021-07-27 19:43:07.9491|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddSystemUser|Operator '>' cannot be applied to operands of type 'int' and 'string'

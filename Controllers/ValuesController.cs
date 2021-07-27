@@ -57,9 +57,11 @@ namespace accAfpslaiEmvSrvc.Controllers
                             var payloadAuthEncrypted = reqPayload.authentication;
                             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
-                            if (payloadAuth.branch != obj.FirstOrDefault().branch) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid at " + obj.FirstOrDefault().branch + " branch" });
-                            else if (DateTime.Now.Date != obj.FirstOrDefault().date_captured) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid on " + Convert.ToDateTime(obj.FirstOrDefault().date_captured).ToString("MM/dd/yyyy") });
-                            else return apiResponse(new response { result = 0, obj = obj });
+                            //if (payloadAuth.branch != obj.FirstOrDefault().branch) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid at " + obj.FirstOrDefault().branch + " branch" });
+                            //else if (DateTime.Now.Date != obj.FirstOrDefault().date_captured) return apiResponse(new responseFailedBadRequest { message = "Reference number is valid on " + Convert.ToDateTime(obj.FirstOrDefault().date_captured).ToString("MM/dd/yyyy") });
+                            //else return apiResponse(new response { result = 0, obj = obj });
+
+                            return apiResponse(new response { result = 0, obj = obj });
                         }
                 }
             }
@@ -405,7 +407,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                 logger.Error(ex.Message);
                 return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
-        }
+        }       
 
         [Route("~/api/getAssociateType")]
         [HttpPost]
@@ -1384,6 +1386,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                         if (string.IsNullOrEmpty(user.user_name) || string.IsNullOrEmpty(user.first_name) || string.IsNullOrEmpty(user.last_name)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else if (user.role_id == null || user.role_id == 0) return apiResponse(new responseFailedBadRequest { message = "Invalid system role" });
+                        else if (user.user_name.Length > Properties.Settings.Default.UserNameMaxLength) return apiResponse(new responseFailedBadRequest { message = "Maximum characters allowed for Username is " + Properties.Settings.Default.UserNameMaxLength});
                         else
                         {
                             int userId = user.id;
@@ -1557,23 +1560,27 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (userId == 0 || userOldPass == "" || userNewPass == "") return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else
                         {
-                            //var dss = ent.dcs_system_setting;
+                            var passResponse = Utilities.IsPasswordValidv2(userNewPass, Properties.Settings.Default.UserPassMinLength);
 
-                            var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
-                            if (obj == null) return apiResponse(new responseFailedBadRequest { message = "User not found" });
-                            else
+                            if (passResponse == "")
                             {
-                                if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(obj.user_pass) == userOldPass)
+                                var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
+                                if (obj == null) return apiResponse(new responseFailedBadRequest { message = "User not found" });
+                                else
                                 {
-                                    obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userNewPass);
-                                    ent.SaveChanges();
+                                    if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(obj.user_pass) == userOldPass)
+                                    {
+                                        obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userNewPass);
+                                        ent.SaveChanges();
 
-                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password has been changed", obj.user_name));
+                                        Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} password has been changed", obj.user_name));
 
-                                    return apiResponse(new responseSuccess { message = "User password has been changed" });
-                                }
-                                else return apiResponse(new response { result = 1, message = "Invalid old password" });
+                                        return apiResponse(new responseSuccess { message = "User password has been changed" });
+                                    }
+                                    else return apiResponse(new response { result = 1, message = "Invalid old password" });
+                                }                                
                             }
+                            return apiResponse(new responseFailedBadRequest { message = passResponse });
                         }
                 }
             }
