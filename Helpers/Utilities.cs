@@ -102,9 +102,24 @@ namespace accAfpslaiEmvSrvc.Helpers
                         if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuth.key) == Properties.Settings.Default.ApiAuth)
                         {
                             afpslai_emvEntities ent = new afpslai_emvEntities();
-                            var user = ent.system_user.Where(o => o.user_name.Equals(payloadAuth.userName) && o.user_pass.Equals(payloadAuth.userPass));
 
-                            if (user.Count() == 0) isAuthorize = false; else userId = payloadAuth.userId;
+                            string userName = payloadAuth.userName;
+                            string userPass = payloadAuth.userPass;
+
+                            //var user = ent.system_user.Where(o => o.user_name.Equals(userName) && o.user_pass.Equals(userPass));
+                            //if (user.Count() == 0) isAuthorize = false; else userId = payloadAuth.userId;
+
+                            //var oldUser = ent.system_user.Where(o => o.user_name.Equals(userName));
+                            //string dbPass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(user.FirstOrDefault().user_pass);
+                            //string paramPass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(userPass);
+                            var user = ent.system_user.Where(o => o.user_name.Equals(userName));
+                            //string dbPass = user.FirstOrDefault().user_pass;
+                            //string paramPass = userPass;
+                            string dbPass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(user.FirstOrDefault().user_pass);
+                            string paramPass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(userPass);
+                            bool isMatch = (dbPass == paramPass);                                                     
+
+                            if (!isMatch) isAuthorize = false; else userId = payloadAuth.userId;
 
                         }
                         else isAuthorize = false;
@@ -125,7 +140,7 @@ namespace accAfpslaiEmvSrvc.Helpers
         {
             string soapResponse = "";
             string err = "";            
-            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo });
+            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo});
             bool response = ExecuteApiRequest(Properties.Settings.Default.WiseCard_cardBindCifNo_Url, soapStr, ref soapResponse, ref err);
             if (response)
             {

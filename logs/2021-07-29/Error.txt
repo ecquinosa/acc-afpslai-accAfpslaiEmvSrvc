@@ -1,0 +1,13 @@
+2021-07-29 14:27:48.0196|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111101 and card no 6389760030117145 to CMS. 04 This card already bind the same CIF No
+2021-07-29 14:33:32.4660|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111102 and card no 6389760030117145 to CMS. 05 This card already bind another customer
+2021-07-29 14:34:05.1942|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111102 and card no 6389760030117146 to CMS. 05 This card already bind another customer
+2021-07-29 14:41:39.1002|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111103 and card no 6389760030117147 to CMS. 04 This card already bind the same CIF No
+2021-07-29 14:59:47.8307|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111777 and card no 6389760030117150 to CMS. 03 Customer not exist
+2021-07-29 15:01:53.5834|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117777 to CMS. 01 Card No not exist
+2021-07-29 17:06:10.4637|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111105 and card no 6389760030117150 to CMS. 07 Parameter invalid
+2021-07-29 19:46:46.7380|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.AddCivilStatus|Cannot implicitly convert type 'string' to 'int'
+2021-07-29 22:33:37.8331|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2021-07-29 22:35:51.5617|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2021-07-29 22:39:26.3709|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2021-07-29 22:40:01.6125|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2021-07-29 22:41:24.3357|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.

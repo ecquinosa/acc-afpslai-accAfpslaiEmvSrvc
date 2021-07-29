@@ -26,5 +26,6 @@ namespace accAfpslaiEmvSrvc
         public Nullable<bool> is_deleted { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
+        public Nullable<bool> is_default_pass { get; set; }
     }
 }

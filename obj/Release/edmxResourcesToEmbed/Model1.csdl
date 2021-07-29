@@ -26,7 +26,7 @@
     <Property Name="api_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="member_id" Type="Int32" />
     <Property Name="card_id" Type="Int32" />
-    <Property Name="request" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="request" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
     <Property Name="response" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
     <Property Name="is_success" Type="Boolean" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
@@ -178,8 +178,9 @@
     <Property Name="cca_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="reference_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
     <Property Name="qr_code" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="branch" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
     <Property Name="date_schedule" Type="DateTime" Precision="0" />
-    <Property Name="time_schedule" Type="Time" Precision="6" />
+    <Property Name="time_schedule" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
     <Property Name="date_captured" Type="DateTime" Precision="0" />
     <Property Name="reference_id" Type="Int32" />
     <Property Name="date_post" Type="DateTime" Precision="0" />

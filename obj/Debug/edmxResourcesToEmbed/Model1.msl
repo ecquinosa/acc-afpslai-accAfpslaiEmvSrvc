@@ -243,6 +243,7 @@
     <EntitySetMapping Name="system_user">
       <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
         <MappingFragment StoreEntitySet="system_user">
+          <ScalarProperty Name="is_default_pass" ColumnName="is_default_pass" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="user_name" ColumnName="user_name" />
           <ScalarProperty Name="user_pass" ColumnName="user_pass" />

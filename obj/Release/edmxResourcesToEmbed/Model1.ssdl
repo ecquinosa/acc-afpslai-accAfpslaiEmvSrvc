@@ -26,7 +26,7 @@
     <Property Name="api_name" Type="varchar" MaxLength="50" />
     <Property Name="member_id" Type="int4" />
     <Property Name="card_id" Type="int4" />
-    <Property Name="request" Type="varchar" MaxLength="200" />
+    <Property Name="request" Type="varchar" MaxLength="300" />
     <Property Name="response" Type="varchar" MaxLength="1000" />
     <Property Name="is_success" Type="bool" />
     <Property Name="date_post" Type="date" />
@@ -178,8 +178,9 @@
     <Property Name="cca_no" Type="varchar" MaxLength="50" />
     <Property Name="reference_number" Type="varchar" MaxLength="20" />
     <Property Name="qr_code" Type="varchar" MaxLength="100" />
+    <Property Name="branch" Type="varchar" MaxLength="100" />
     <Property Name="date_schedule" Type="date" />
-    <Property Name="time_schedule" Type="time" Precision="6" />
+    <Property Name="time_schedule" Type="varchar" MaxLength="100" />
     <Property Name="date_captured" Type="date" />
     <Property Name="reference_id" Type="int4" />
     <Property Name="date_post" Type="date" />

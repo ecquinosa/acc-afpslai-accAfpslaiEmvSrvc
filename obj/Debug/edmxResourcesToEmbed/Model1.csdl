@@ -238,6 +238,7 @@
     <Property Name="is_deleted" Type="Boolean" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />
+    <Property Name="is_default_pass" Type="Boolean" />
   </EntityType>
   <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="addresses" EntityType="Self.address" />

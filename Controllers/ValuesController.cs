@@ -212,6 +212,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     memberCBS.principal_cif = selLineArr[22];
                                     memberCBS.principal_name = selLineArr[23];
                                     memberCBS.cca_no = selLineArr[24];
+                                    memberCBS.country = "Philippines";
 
                                     return apiResponse(new response { result = 0, obj = memberCBS });
                                 }
@@ -793,6 +794,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                                 role = r.role,
                                                 status = u.status,
                                                 fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
+                                                dateCreated = u.date_post == null ? null : u.date_post,
                                                 is_deleted = u.is_deleted
                                             };
 
@@ -816,6 +818,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                             roleDesc = r.role,
                                             status = u.status,
                                             fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
+                                            dateCreated = u.date_post == null ? null : u.date_post,
                                             is_deleted = u.is_deleted
                                         };
 
@@ -1292,7 +1295,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         else
                         {
                             var dss = ent.dcs_system_setting;
-                            bool isChangePassword = (dss.FirstOrDefault().system_default_password == user.user_pass);
+                            //bool isChangePassword = (dss.FirstOrDefault().system_default_password == user.user_pass);
 
                             if (user.user_pass == accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(objUsername.user_pass))
                             {
@@ -1309,7 +1312,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                           userName = u.user_name,
                                           userPass = u.user_pass,
                                           fullName = u.first_name + " " + u.middle_name + " " + u.last_name + " " + u.suffix,
-                                          isChangePassword = isChangePassword
+                                          isChangePassword = u.is_default_pass
                                       }
                                   )
                                   .Where(o => o.userName.Equals(userName))
@@ -1411,6 +1414,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     user.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
                                     user.date_post = DateTime.Now.Date;
                                     user.time_post = DateTime.Now.TimeOfDay;
+                                    user.is_default_pass = true;
                                     user.is_deleted = false;
                                     ent.system_user.Add(user);
                                     ent.SaveChanges();
@@ -1505,7 +1509,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             if (obj == null) return apiResponse(new responseFailedBadRequest { message = "User not found" });
                             else
                             {
-
+                                obj.is_default_pass = true;
                                 obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(dss.FirstOrDefault().system_default_password);
                                 ent.SaveChanges();
 
@@ -1558,6 +1562,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (objPayload.userNewPass != null) userNewPass = objPayload.userNewPass;
 
                         if (userId == 0 || userOldPass == "" || userNewPass == "") return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        else if (userOldPass == userNewPass) return apiResponse(new responseFailedBadRequest { message = "Old and New password should not be same" });
                         else
                         {
                             var passResponse = Utilities.IsPasswordValidv2(userNewPass, Properties.Settings.Default.UserPassMinLength);
@@ -1570,6 +1575,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 {
                                     if (accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(obj.user_pass) == userOldPass)
                                     {
+                                        obj.is_default_pass = false;
                                         obj.user_pass = accAfpslaiEmvEncDec.Aes256CbcEncrypter.Encrypt(userNewPass);
                                         ent.SaveChanges();
 
@@ -2468,6 +2474,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 if (obj != null)
                                 {
                                     obj.branchName = branch.branchName;
+                                    obj.code = branch.code;
                                     ent.SaveChanges();
 
                                     Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("branch id {0} is modified", branchId));
@@ -2566,7 +2573,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             if (civilStatus.id == 0)
                             {
-                                int civilStatusDesc = civilStatus.civilStatus;
+                                string civilStatusDesc = civilStatus.civilStatus;
                                 var obj = ent.civil_status.Where(o => o.civilStatus.Equals(civilStatusDesc));
                                 if (obj.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
                                 else
@@ -2864,24 +2871,43 @@ namespace accAfpslaiEmvSrvc.Controllers
 
         [Route("~/api/delMembershipStatus")]
         [HttpPost]
-        public IHttpActionResult DeleteMembershipStatus(membership_status membershipStatus)
+        public IHttpActionResult DeleteMembershipStatus(requestPayload reqPayload)
         {
             try
             {
-                afpslai_emvEntities ent = new afpslai_emvEntities();
+                string payload = reqPayload.payload;
 
-                if (membershipStatus.id == 0) return apiResponse(new responseFailedBadRequest());
-                else
+                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                switch (validationResponse)
                 {
-                    var obj = ent.membership_status.Where(o => o.id == membershipStatus.id).FirstOrDefault();
-                    if (obj != null)
-                    {
-                        obj.is_deleted = true;
-                        ent.SaveChanges();
+                    case (int)System.Net.HttpStatusCode.Unauthorized:
+                        return apiResponse(new responseFailedUnauthorized());
+                    case (int)System.Net.HttpStatusCode.BadRequest:
+                        return apiResponse(new responseFailedBadRequest());
 
-                        return apiResponse(new responseSuccessDeleteRecord());
-                    }
-                    else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                    case (int)System.Net.HttpStatusCode.InternalServerError:
+                        return apiResponse(new responseFailedSystemError());
+                    default:
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                        var membershipStatus = Newtonsoft.Json.JsonConvert.DeserializeObject<membership_status>(objPayload.ToString());                      
+
+                        if (membershipStatus.id == 0) return apiResponse(new responseFailedBadRequest());
+                        else
+                        {
+                            int membershipStatusId = membershipStatus.id;
+                            var obj = ent.membership_status.Where(o => o.id == membershipStatusId).FirstOrDefault();
+                            if (obj != null)
+                            {
+                                obj.is_deleted = true;
+                                ent.SaveChanges();
+
+                                return apiResponse(new responseSuccessDeleteRecord());
+                            }
+                            else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                        }
                 }
             }
             catch (Exception ex)
@@ -3155,7 +3181,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             if (recardReason.id == 0)
                             {
-                                int recardReasonDesc = recardReason.recardReason;
+                                string recardReasonDesc = recardReason.recardReason;
                                 var obj = ent.recard_reason.Where(o => o.recardReason.Equals(recardReasonDesc));
                                 if (obj.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
                                 else

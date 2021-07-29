@@ -240,6 +240,7 @@
           <Property Name="suffix" Type="varchar" MaxLength="10" />
           <Property Name="role_id" Type="int4" />
           <Property Name="status" Type="varchar" MaxLength="20" />
+          <Property Name="is_default_pass" Type="bool" />
           <Property Name="is_deleted" Type="bool" />
           <Property Name="date_post" Type="date" />
           <Property Name="time_post" Type="time" Precision="6" />
@@ -506,6 +507,7 @@
           <Property Name="is_deleted" Type="Boolean" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
+          <Property Name="is_default_pass" Type="Boolean" />
         </EntityType>
         <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="addresses" EntityType="Self.address" />
@@ -775,6 +777,7 @@
           <EntitySetMapping Name="system_user">
             <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
               <MappingFragment StoreEntitySet="system_user">
+                <ScalarProperty Name="is_default_pass" ColumnName="is_default_pass" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_name" ColumnName="user_name" />
                 <ScalarProperty Name="user_pass" ColumnName="user_pass" />
