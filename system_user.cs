@@ -23,9 +23,9 @@ namespace accAfpslaiEmvSrvc
         public string suffix { get; set; }
         public Nullable<int> role_id { get; set; }
         public string status { get; set; }
+        public Nullable<bool> is_default_pass { get; set; }
         public Nullable<bool> is_deleted { get; set; }
         public Nullable<System.DateTime> date_post { get; set; }
         public Nullable<System.TimeSpan> time_post { get; set; }
-        public Nullable<bool> is_default_pass { get; set; }
     }
 }

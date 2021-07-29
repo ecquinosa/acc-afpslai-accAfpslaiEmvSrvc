@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="address">
           <Key>
             <PropertyRef Name="id" />
@@ -265,7 +265,8 @@
           <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="afpslai_emvModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -504,10 +505,10 @@
           <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="role_id" Type="Int32" />
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="is_default_pass" Type="Boolean" />
           <Property Name="is_deleted" Type="Boolean" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
-          <Property Name="is_default_pass" Type="Boolean" />
         </EntityType>
         <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="addresses" EntityType="Self.address" />
@@ -777,7 +778,6 @@
           <EntitySetMapping Name="system_user">
             <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
               <MappingFragment StoreEntitySet="system_user">
-                <ScalarProperty Name="is_default_pass" ColumnName="is_default_pass" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_name" ColumnName="user_name" />
                 <ScalarProperty Name="user_pass" ColumnName="user_pass" />
@@ -787,6 +787,7 @@
                 <ScalarProperty Name="suffix" ColumnName="suffix" />
                 <ScalarProperty Name="role_id" ColumnName="role_id" />
                 <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="is_default_pass" ColumnName="is_default_pass" />
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
                 <ScalarProperty Name="date_post" ColumnName="date_post" />
                 <ScalarProperty Name="time_post" ColumnName="time_post" />
