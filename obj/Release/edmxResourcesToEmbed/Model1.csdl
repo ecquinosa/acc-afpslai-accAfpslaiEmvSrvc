@@ -235,6 +235,7 @@
     <Property Name="suffix" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
     <Property Name="role_id" Type="Int32" />
     <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="is_default_pass" Type="Boolean" />
     <Property Name="is_deleted" Type="Boolean" />
     <Property Name="date_post" Type="DateTime" Precision="0" />
     <Property Name="time_post" Type="Time" Precision="6" />

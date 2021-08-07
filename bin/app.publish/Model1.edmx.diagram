@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="efac02692ca9487dad3856a15bc2ad79" Name="Diagram1">
+      <Diagram DiagramId="fcf87e2cb4ca44e9b5844a8e26e8e247" Name="Diagram1">
         <EntityTypeShape EntityType="afpslai_emvModel.address" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="afpslai_emvModel.api_request_log" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="afpslai_emvModel.associate_type" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />

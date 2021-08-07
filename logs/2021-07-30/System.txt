@@ -1,0 +1,2 @@
+2021-07-30 20:32:59.3057|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117149 to CMS. 05 This card already bind another customer
+2021-07-30 20:34:14.0350|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111104 and card no 6389760030117149 to CMS. 05 This card already bind another customer

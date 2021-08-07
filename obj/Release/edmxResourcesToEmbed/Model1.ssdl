@@ -235,6 +235,7 @@
     <Property Name="suffix" Type="varchar" MaxLength="10" />
     <Property Name="role_id" Type="int4" />
     <Property Name="status" Type="varchar" MaxLength="20" />
+    <Property Name="is_default_pass" Type="bool" />
     <Property Name="is_deleted" Type="bool" />
     <Property Name="date_post" Type="date" />
     <Property Name="time_post" Type="time" Precision="6" />

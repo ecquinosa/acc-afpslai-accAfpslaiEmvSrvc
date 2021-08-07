@@ -252,6 +252,7 @@
           <ScalarProperty Name="suffix" ColumnName="suffix" />
           <ScalarProperty Name="role_id" ColumnName="role_id" />
           <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="is_default_pass" ColumnName="is_default_pass" />
           <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
           <ScalarProperty Name="date_post" ColumnName="date_post" />
           <ScalarProperty Name="time_post" ColumnName="time_post" />

@@ -1,0 +1,1 @@
+2021-08-06 18:08:43.9251|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111101 and card no 6389760030117145 to CMS. 07 Parameter invalid
