@@ -139,8 +139,9 @@ namespace accAfpslaiEmvSrvc.Helpers
         public static bool wiseCardcardBindCifNo(cbsCms cbsCms, ref cmsResponse cmsResponse, ref string msg)
         {
             string soapResponse = "";
-            string err = "";            
-            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo});
+            string err = "";
+            //string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo});
+            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo, nameOnCard = cbsCms.cardName });
             bool response = ExecuteApiRequest(Properties.Settings.Default.WiseCard_cardBindCifNo_Url, soapStr, ref soapResponse, ref err);
             if (response)
             {

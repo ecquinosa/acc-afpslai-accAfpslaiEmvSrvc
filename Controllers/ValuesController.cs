@@ -125,8 +125,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             Helpers.Utilities.SaveApiRequestLog(arl);
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
-                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
-                            else return apiResponse(new responseSuccess { message = string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg) });
+                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo, Environment.NewLine, Environment.NewLine + msg) });
+                            else return apiResponse(new responseSuccess { message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo,Environment.NewLine, Environment.NewLine + msg) });
                         }
                 }
             }
@@ -1025,7 +1025,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                        from rr in table10.DefaultIfEmpty()
                                        join cntry in ent.countries on a.country_id equals cntry.id into table11
                                        from cntry in table11.DefaultIfEmpty()
-                                       where m.is_cancel == false && c.is_cancel == false
+                                       where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null)
                                        select new
                                        {
                                            memberId = m.id,
@@ -1074,16 +1074,16 @@ namespace accAfpslaiEmvSrvc.Controllers
                                            countryId = a.country_id,
                                            country = cntry.countryName,
                                            zipCode = a.zipcode,
-                                           cardNo = c.cardNo,
-                                           dateCMS = c.date_CMS,
-                                           dateCBS = c.date_CBS,
-                                           cDatePost = c.date_post
-                                       })
+                                           cardNo = c == null ? string.Empty : c.cardNo,
+                                           dateCMS = c == null ? null : c.date_CMS,
+                                           dateCBS = c == null ? null : c.date_CBS,
+                                           cDatePost = c == null ? null : c.date_post
+                                       })                                     
                                        .Where(t => memberId == 0 || memberId == t.memberId)
                                        .Where(t => cif == "" || cif == t.cif)
                                        .Where(t => branch == "" || branch == t.branch)
                                        .ToList();
-
+                    
                         return apiResponse(new response { result = 0, obj = members });
                         //}
                 }
@@ -1094,6 +1094,44 @@ namespace accAfpslaiEmvSrvc.Controllers
                 return apiResponse(new responseFailedSystemError { message = ex.Message });
             }
         }
+
+        //[Route("~/api/getMember2")]
+        //[HttpPost]
+        //public IHttpActionResult GetMember2()
+        //{
+        //    try
+        //    {
+
+        //        afpslai_emvEntities ent = new afpslai_emvEntities();
+
+        //        var members = (from m in ent.members
+        //                       join c in ent.cards on m.id equals c.member_id into table1
+        //                       from c in table1.DefaultIfEmpty()
+        //                       where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null)
+        //                       select new
+        //                       {
+        //                           memberId = m.id,
+        //                           cif = m.cif,
+        //                           lastName = m.last_name,
+        //                           firstName = m.first_name,
+        //                           middleName = m.middle_name,
+        //                           suffix = m.suffix,
+        //                           cardNo = c == null ? string.Empty : c.cardNo,
+        //                           dateCMS = c == null ? null : c.date_CMS,
+        //                           dateCBS = c == null ? null : c.date_CBS,
+        //                           cDatePost = c == null ? null : c.date_post,
+        //                           cIsCancel = c == null ? null : c.is_cancel
+        //                       }).ToList();
+
+        //        return apiResponse(new response { result = 0, obj = members });
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //        return apiResponse(new responseFailedSystemError { message = ex.Message });
+        //    }
+        //}
 
         [Route("~/api/getCardForPrint")]
         [HttpPost]
@@ -3228,43 +3266,52 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 string payload = reqPayload.payload;
 
-                var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+                var validateResponse = this.validationResponse2(reqPayload);
 
-                switch (validationResponse)
+                if (validateResponse == Ok())
                 {
-                    case (int)System.Net.HttpStatusCode.Unauthorized:
-                        return apiResponse(new responseFailedUnauthorized());
-                    case (int)System.Net.HttpStatusCode.BadRequest:
-                        return apiResponse(new responseFailedBadRequest());
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
 
-                    case (int)System.Net.HttpStatusCode.InternalServerError:
-                        return apiResponse(new responseFailedSystemError());
-                    default:
-                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                    dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                    var recardReason = Newtonsoft.Json.JsonConvert.DeserializeObject<recard_reason>(objPayload.ToString()); ;
 
-                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-                        var recardReason = Newtonsoft.Json.JsonConvert.DeserializeObject<recard_reason>(objPayload.ToString()); ;
-
-                        if (recardReason.id == 0) return apiResponse(new responseFailedBadRequest());
-                        else
+                    if (recardReason.id == 0) return apiResponse(new responseFailedBadRequest());
+                    else
+                    {
+                        int recardReasonId = recardReason.id;
+                        var obj = ent.recard_reason.Where(o => o.id == recardReasonId).FirstOrDefault();
+                        if (obj != null)
                         {
-                            int recardReasonId = recardReason.id;
-                            var obj = ent.recard_reason.Where(o => o.id == recardReasonId).FirstOrDefault();
-                            if (obj != null)
-                            {
-                                obj.is_deleted = true;
-                                ent.SaveChanges();
+                            obj.is_deleted = true;
+                            ent.SaveChanges();
 
-                                return apiResponse(new responseSuccessDeleteRecord());
-                            }
-                            else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                            return apiResponse(new responseSuccessDeleteRecord());
                         }
-                }
+                        else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                    }
+                } else return validateResponse;             
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
                 return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        public IHttpActionResult validationResponse2(requestPayload reqPayload)
+        {
+            var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+            switch (validationResponse)
+            {
+                case (int)System.Net.HttpStatusCode.Unauthorized:
+                    return apiResponse(new responseFailedUnauthorized());
+                case (int)System.Net.HttpStatusCode.BadRequest:
+                    return apiResponse(new responseFailedBadRequest());
+                case (int)System.Net.HttpStatusCode.InternalServerError:
+                    return apiResponse(new responseFailedSystemError());
+                default:
+                    return Ok();
             }
         }
 
