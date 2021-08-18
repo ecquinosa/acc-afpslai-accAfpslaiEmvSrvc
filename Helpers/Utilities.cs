@@ -141,7 +141,8 @@ namespace accAfpslaiEmvSrvc.Helpers
             string soapResponse = "";
             string err = "";
             //string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo});
-            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo, nameOnCard = cbsCms.cardName });
+            //string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo, nameOnCard = cbsCms.cardName });
+            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, nameOnCard = cbsCms.cardName, requestId = cbsCms.cardId.ToString() });
             bool response = ExecuteApiRequest(Properties.Settings.Default.WiseCard_cardBindCifNo_Url, soapStr, ref soapResponse, ref err);
             if (response)
             {
@@ -210,9 +211,17 @@ namespace accAfpslaiEmvSrvc.Helpers
             {
                 client.Dispose();                
             }
-        }       
+        }
 
-            
+        public static DateTime DbDataStartDate()
+        {
+            return Convert.ToDateTime("06/01/2021").Date;
+        }
+
+        public static DateTime DbDataEndDate()
+        {
+            return DateTime.Now.Date;
+        }
 
     }
 }

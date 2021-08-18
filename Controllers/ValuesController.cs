@@ -467,8 +467,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                     default:
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
 
-                        DateTime? startDate = null;
-                        DateTime? endDate = null;
+                        DateTime? startDate = Helpers.Utilities.DbDataStartDate();
+                        DateTime? endDate = Helpers.Utilities.DbDataEndDate();
                         string branch = "";
 
                         if (objPayload.startDate != null) startDate = objPayload.startDate;
@@ -477,30 +477,38 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                         afpslai_emvEntities ent = new afpslai_emvEntities();
                         var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
-
-                        var start = startDate;
-                        var end = endDate;
+                       
                         int branchId = 0;
                         if (b != null) branchId = b.id;
 
+                        //var obj = from m in ent.members
+                        //          where m.is_cancel == false && m.date_post >= startDate && m.date_post <= endDate
+                        //          group m by m.date_post into g
+                        //          select new
+                        //          {
+                        //              DatePost = g.Key,
+                        //              NewCards = g.Count(x => x.print_type_id == 1 && (branchId == 0 || branchId == x.branch_id)),
+                        //              ReplacedCards = g.Count(x => x.print_type_id == 2 && (branchId == 0 || branchId == x.branch_id))
+                        //          };
+
                         var obj = from m in ent.members
-                          where m.is_cancel == false && m.date_post >= start && m.date_post <= end
-                          group m by m.date_post into g
-                          select new
-                          {
-                              DatePost = g.Key,
-                              NewCards = g.Count(x => x.print_type_id == 1 && (branchId == 0 || branchId == x.branch_id)),
-                              ReplacedCards = g.Count(x => x.print_type_id == 2 && (branchId == 0 || branchId == x.branch_id))
-                          };
+                                  where m.is_cancel == false && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                                  group m by m.date_post into g
+                                  select new
+                                  {
+                                      DatePost = g.Key,
+                                      NewCards = g.Count(x => x.print_type_id == 1),
+                                      ReplacedCards = g.Count(x => x.print_type_id == 2)
+                                  };
 
                         var newResults = (from r in obj.ToList()
-                                         select new
-                                         {
-                                             CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
-                                             NewCards = r.NewCards,
-                                             ReplacedCards = r.ReplacedCards,
-                                             Total = r.NewCards + r.ReplacedCards
-                                         }).Where(o => o.Total > 0).ToList();
+                                          select new
+                                          {
+                                              CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
+                                              NewCards = r.NewCards,
+                                              ReplacedCards = r.ReplacedCards,
+                                              Total = r.NewCards + r.ReplacedCards
+                                          }).Where(o => o.Total > 0).ToList();
 
                         return apiResponse(new response { result = 0, obj = newResults });
                 }
@@ -534,8 +542,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                     default:
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
 
-                        DateTime? startDate = null;
-                        DateTime? endDate = null;
+                        DateTime? startDate = Helpers.Utilities.DbDataStartDate();
+                        DateTime? endDate = Helpers.Utilities.DbDataEndDate();
                         string branch = "";
 
                         if (objPayload.startDate != null) startDate = objPayload.startDate;
@@ -545,32 +553,42 @@ namespace accAfpslaiEmvSrvc.Controllers
                         afpslai_emvEntities ent = new afpslai_emvEntities();
                         var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
 
-                        var start = startDate;
-                        var end = endDate;
+                        //var start = startDate;
+                        //var end = endDate;
                         int branchId = 0;
                         if (b != null) branchId = b.id;
 
+                        //var obj = from m in ent.members
+                        //          where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= startDate && m.date_post <= endDate
+                        //          group m by m.date_post into g
+                        //          select new
+                        //          {
+                        //              DatePost = g.Key,
+                        //              Lost = g.Count(x => x.recard_reason_id == 1 && (branchId == 0 || branchId == x.branch_id)),
+                        //              TornDamaged = g.Count(x => x.recard_reason_id == 2 && (branchId == 0 || branchId == x.branch_id)),
+                        //              IncorrectDetails = g.Count(x => x.recard_reason_id == 3 && (branchId == 0 || branchId == x.branch_id))
+                        //          };
+
                         var obj = from m in ent.members
-                                  where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= start && m.date_post <= end
+                                  where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
                                   group m by m.date_post into g
                                   select new
                                   {
                                       DatePost = g.Key,
-                                      Lost = g.Count(x => x.recard_reason_id == 1 && (branchId == 0 || branchId == x.branch_id)),
-                                      TornDamaged = g.Count(x => x.recard_reason_id == 2 && (branchId == 0 || branchId == x.branch_id)),
-                                      IncorrectDetails = g.Count(x => x.recard_reason_id == 3 && (branchId == 0 || branchId == x.branch_id))
+                                      Lost = g.Count(x => x.recard_reason_id == 1),
+                                      TornDamaged = g.Count(x => x.recard_reason_id == 2),
+                                      IncorrectDetails = g.Count(x => x.recard_reason_id == 3)
                                   };
 
-
                         var newResults = (from r in obj.ToList()
-                                         select new
-                                         {
-                                             CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
-                                             Lost = r.Lost,
-                                             TornDamaged = r.TornDamaged,
-                                             IncorrectDetails = r.IncorrectDetails,
-                                             Total = r.Lost + r.TornDamaged + r.IncorrectDetails
-                                         }).Where(o => o.Total > 0).ToList();
+                                          select new
+                                          {
+                                              CapturedDate = Convert.ToDateTime(r.DatePost).ToString("MM/dd/yyyy"),
+                                              Lost = r.Lost,
+                                              TornDamaged = r.TornDamaged,
+                                              IncorrectDetails = r.IncorrectDetails,
+                                              Total = r.Lost + r.TornDamaged + r.IncorrectDetails
+                                          }).Where(o => o.Total > 0).ToList();
 
                         return apiResponse(new response { result = 0, obj = newResults });
                 }
@@ -991,13 +1009,27 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
 
+                        DateTime? startDate = Helpers.Utilities.DbDataStartDate();
+                        DateTime? endDate = Helpers.Utilities.DbDataEndDate();
+
                         string cif = "";
                         int memberId = 0;
                         string branch = "";
+                        int printTypeId = 0;
+                        int recardReasonId = 0;
 
                         if (objPayload.cif != null) cif = objPayload.cif;
                         if (objPayload.memberId != null) memberId = objPayload.memberId;
                         if (objPayload.branch != null) branch = objPayload.branch;
+                        if (objPayload.printTypeId != null) printTypeId = objPayload.printTypeId;
+                        if (objPayload.recardReasonId != null) recardReasonId = objPayload.recardReasonId;
+
+                        if (objPayload.startDate != null) startDate = objPayload.startDate;
+                        if (objPayload.endDate != null) endDate = objPayload.endDate;
+
+                        var branchEnt = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
+                        int branchId = 0;
+                        if (branchEnt != null) branchId = branchEnt.id;
 
                         //if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
                         //else
@@ -1025,7 +1057,12 @@ namespace accAfpslaiEmvSrvc.Controllers
                                        from rr in table10.DefaultIfEmpty()
                                        join cntry in ent.countries on a.country_id equals cntry.id into table11
                                        from cntry in table11.DefaultIfEmpty()
-                                       where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null)
+                                       where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && m.date_post >= startDate && m.date_post <= endDate && 
+                                       (branchId == 0 || branchId == m.branch_id) && 
+                                       (memberId == 0 || memberId == m.id) && 
+                                       (cif == "" || cif == m.cif) &&
+                                       (printTypeId == 0 || printTypeId == m.print_type_id) &&
+                                       (recardReasonId == 0 || recardReasonId == m.recard_reason_id)
                                        select new
                                        {
                                            memberId = m.id,
@@ -1078,12 +1115,14 @@ namespace accAfpslaiEmvSrvc.Controllers
                                            dateCMS = c == null ? null : c.date_CMS,
                                            dateCBS = c == null ? null : c.date_CBS,
                                            cDatePost = c == null ? null : c.date_post
-                                       })                                     
-                                       .Where(t => memberId == 0 || memberId == t.memberId)
-                                       .Where(t => cif == "" || cif == t.cif)
-                                       .Where(t => branch == "" || branch == t.branch)
+                                       }) 
                                        .ToList();
-                    
+
+                           //.Where(t => memberId == 0 || memberId == t.memberId)
+                           //            .Where(t => cif == "" || cif == t.cif)
+                           //            .Where(t => branch == "" || branch == t.branch)
+                           //            .ToList();
+
                         return apiResponse(new response { result = 0, obj = members });
                         //}
                 }
