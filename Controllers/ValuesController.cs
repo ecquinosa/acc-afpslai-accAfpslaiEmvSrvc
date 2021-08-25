@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 //using accAfpslaiEmvSrvc.Helpers;
 //sing accAfpslaiEmvSrvc.Models;
+using System.Collections.Generic;
 using accAfpslaiEmvObjct;
 
 namespace accAfpslaiEmvSrvc.Controllers
@@ -23,7 +24,7 @@ namespace accAfpslaiEmvSrvc.Controllers
         public IHttpActionResult GetOnlineRegistration(requestPayload reqPayload)
         {
             try
-            {
+            {                
                 //Random rn = new Random();
                 //processId = rn.Next()
 
@@ -98,6 +99,14 @@ namespace accAfpslaiEmvSrvc.Controllers
                         Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
                         string msg = "";
                         cmsResponse cmsResponse = null;
+
+                        api_request_log arl = new api_request_log();
+                        arl.card_id = cbsCms.cardId;
+                        arl.member_id = cbsCms.memberId;
+                        arl.api_owner = "cms";
+                        arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
+                        arl.request = objPayload.ToString();
+
                         if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
                         {
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
@@ -110,17 +119,15 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 ent.SaveChanges();
                             }
 
+                            arl.is_success = true;                        
+                            arl.response = msg;
+                            Helpers.Utilities.SaveApiRequestLog(arl);
+
                             return apiResponse(new responseSuccess());
                         }
                         else
                         {
-                            api_request_log arl = new api_request_log();
-                            arl.card_id = cbsCms.cardId;
-                            arl.member_id = cbsCms.memberId;
-                            arl.api_owner = "cms";
-                            arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
                             arl.is_success = false;
-                            arl.request = objPayload.ToString();
                             arl.response = msg;
                             Helpers.Utilities.SaveApiRequestLog(arl);
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
@@ -1030,10 +1037,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         var branchEnt = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
                         int branchId = 0;
                         if (branchEnt != null) branchId = branchEnt.id;
-
-                        //if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
-                        //else
-                        //{
+                      
                         var members = (from m in ent.members
                                        join c in ent.cards on m.id equals c.member_id into table1
                                        from c in table1.DefaultIfEmpty()
@@ -1116,15 +1120,9 @@ namespace accAfpslaiEmvSrvc.Controllers
                                            dateCBS = c == null ? null : c.date_CBS,
                                            cDatePost = c == null ? null : c.date_post
                                        }) 
-                                       .ToList();
+                                       .ToList();                          
 
-                           //.Where(t => memberId == 0 || memberId == t.memberId)
-                           //            .Where(t => cif == "" || cif == t.cif)
-                           //            .Where(t => branch == "" || branch == t.branch)
-                           //            .ToList();
-
-                        return apiResponse(new response { result = 0, obj = members });
-                        //}
+                        return apiResponse(new response { result = 0, obj = members });                        
                 }
             }
             catch (Exception ex)
@@ -1172,6 +1170,86 @@ namespace accAfpslaiEmvSrvc.Controllers
         //    }
         //}
 
+        //[Route("~/api/getCardForPrint")]
+        //[HttpPost]
+        //public IHttpActionResult GetCardForPrint(requestPayload reqPayload)
+        ////public IHttpActionResult GetCardForPrint(string payload)
+        //{
+        //    try
+        //    {
+        //        //string payload = reqPayload.payload;
+
+        //        var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+        //        //switch (validationResponse)
+        //        //{
+        //        //    case (int)System.Net.HttpStatusCode.Unauthorized:
+        //        //        return apiResponse(new responseFailedUnauthorized());
+        //        //    case (int)System.Net.HttpStatusCode.BadRequest:
+        //        //        return apiResponse(new responseFailedBadRequest());
+
+        //        //    case (int)System.Net.HttpStatusCode.InternalServerError:
+        //        //        return apiResponse(new responseFailedSystemError());
+        //        //    default:
+        //                //afpslai_emvEntities ent = new afpslai_emvEntities();
+
+        //                //dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+        //                //string cif = "";
+        //                //int cardId = 0;
+        //                //int memberId = 0;
+        //                //string cardNo = "";
+
+        //                //if (objPayload.cif != null) cif = objPayload.cif;
+        //                //if (objPayload.cardId != null) cardId = objPayload.cardId;
+        //                //if (objPayload.memberId != null) memberId = objPayload.memberId;
+        //                //if (objPayload.cardNo != null) cardNo = objPayload.cardNo;
+
+
+        //                //if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
+        //                //else
+        //                //{
+        //                //System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        //                //sb.Append("select c.id as cardId, m.id as memberId, m.cif, c.\"cardNo\" as cardNo, ");
+        //                //sb.Append("m.card_name as cardName, m.first_name, m.middle_name, m.last_name, m.suffix, ");
+        //                //sb.Append("m.gender, m.date_post as dateCaptured, m.membership_date, b.\"branchName\" as branch_issued, ");
+        //                //sb.Append("m.mobile_nos as mobileNo, m.terminal_id as terminalId, c.date_post as datePrinted, ");
+        //                //sb.Append("c.time_post as timePrinted ");
+        //                //sb.Append("from afpslai_emv.member m left outer join (select * from afpslai_emv.card where afpslai_emv.card.is_cancel = false or afpslai_emv.card.is_cancel is null) c ON m.id = c.member_id ");
+        //                //sb.Append("left outer join afpslai_emv.branch b on b.id = m.branch_id ");
+        //                //sb.Append("where m.is_cancel = false and m.cif = '1111111111103' ");
+
+        //                //if (cif != "") sb.Append(string.Format("and m.cif = '{0}' ", cif));
+        //                //if (cardNo != "") sb.Append(string.Format("and c.\"cardNo\" = '{0}' ", cardNo));
+        //                //if (memberId > 0) sb.Append(string.Format("and m.id = {0} ", memberId));
+        //                //if (cardId > 0) sb.Append(string.Format("and c.id = {0} ", cardId));
+
+        //                var member = GetCardForPrint3();//ent.Database.SqlQuery<cardForPrint>(sb.ToString()).ToList();
+
+        //                //if (memberCard != null)
+        //                //    {
+        //                //        string photoRepo = string.Format(@"{0}\{1}", Properties.Settings.Default.PhotoRepo, Convert.ToDateTime(memberCard.FirstOrDefault().dateCaptured).ToString(dateFormat));
+
+        //                //        string photoFile = string.Format(@"{0}\{1}.jpg", photoRepo, memberCard.FirstOrDefault().cif);
+        //                //        if (System.IO.File.Exists(photoFile))
+        //                //        {
+        //                //            var base64Photo = System.Convert.ToBase64String(System.IO.File.ReadAllBytes(photoFile));
+        //                //            memberCard.FirstOrDefault().base64Photo = base64Photo;
+        //                //        }
+        //                //        else return apiResponse(new response { result = 1, message = "Photo not found" });
+        //                //    }
+
+        //                return apiResponse(new response { result = 0, obj = member });
+        //                //}
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //        return apiResponse(new responseFailedSystemError { message = ex.Message });
+        //    }
+        //}
+
         [Route("~/api/getCardForPrint")]
         [HttpPost]
         public IHttpActionResult GetCardForPrint(requestPayload reqPayload)
@@ -1207,18 +1285,19 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (objPayload.memberId != null) memberId = objPayload.memberId;
                         if (objPayload.cardNo != null) cardNo = objPayload.cardNo;
 
-                        //where m.is_cancel == false && c.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
-                        //where m.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
-
                         if (string.IsNullOrEmpty(cif) && string.IsNullOrEmpty(cardNo) && cardId == 0 && memberId == 0) return apiResponse(new responseFailedBadRequest { message = "Empty cif or card no. or card id or member id" });
                         else
                         {
-                            var memberCards = (from m in ent.members
+                           var memberCards = (from m in ent.members
                                                join c in ent.cards on m.id equals c.member_id into table1
                                                from c in table1.DefaultIfEmpty()
                                                join b in ent.branches on m.branch_id equals b.id into table2
                                                from b in table2.DefaultIfEmpty()
-                                               where m.is_cancel == false && (m.cif.Equals(cif) || c.cardNo.Equals(cardNo) || c.id == cardId || m.id == memberId)
+                                               where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) &&
+                                               (cardId == 0 || cardId == c.id) &&
+                                               (memberId == 0 || memberId == m.id) &&
+                                               (cif == "" || cif == m.cif) &&
+                                               (cardNo == "" || cardNo == c.cardNo)
                                                select new
                                                {
                                                    cardId = c == null ? 0 : c.id,
@@ -1246,7 +1325,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                             if (memberCards.Count() > 0)
                             {
-                                var memberCard = memberCards.ToList().Where(o => o.cIsCancel.Equals(false)).LastOrDefault();
+                                var memberCard = memberCards.FirstOrDefault(); //memberCards.ToList().Where(o => o.cIsCancel.Equals(false)).LastOrDefault();
 
                                 string photoRepo = string.Format(@"{0}\{1}", Properties.Settings.Default.PhotoRepo, Convert.ToDateTime(memberCard.mDatePost).ToString(dateFormat));
 
@@ -1265,12 +1344,15 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.last_name = memberCard.last_name;
                                     cfp.suffix = memberCard.suffix;
                                     cfp.gender = memberCard.gender;
-                                    cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
-                                    cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
+                                    //cfp.dateCaptured = Convert.ToDateTime(memberCard.mDatePost).ToString("MM/dd/yyyy");
+                                    cfp.dateCaptured = memberCard.mDatePost;
+                                    //cfp.membership_date = Convert.ToDateTime(memberCard.membership_date).ToString("MM/dd/yyyy");
+                                    cfp.membership_date = memberCard.membership_date;
                                     cfp.branch_issued = memberCard.branchName;
                                     cfp.mobileNo = memberCard.mobileNo;
                                     cfp.terminalId = memberCard.terminalId;
-                                    if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
+                                    //if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
+                                    if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost);
                                     cfp.base64Photo = base64Photo;
                                 }
                                 else return apiResponse(new response { result = 1, message = "Photo not found" });
@@ -1284,6 +1366,86 @@ namespace accAfpslaiEmvSrvc.Controllers
             {
                 logger.Error(ex.Message);
                 return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        //[Route("~/api/getCardForPrintv2")]
+        //[HttpPost]
+        //public IHttpActionResult GetCardForPrintv2(requestPayload reqPayload)
+        //{
+        //    try
+        //    {
+        //        var memberCards = GetCardForPrint3();
+
+        //        string payload = reqPayload.payload;
+
+        //        var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+        //        switch (validationResponse)
+        //        {
+        //            case (int)System.Net.HttpStatusCode.Unauthorized:
+        //                return apiResponse(new responseFailedUnauthorized());
+        //            case (int)System.Net.HttpStatusCode.BadRequest:
+        //                return apiResponse(new responseFailedBadRequest());
+
+        //            case (int)System.Net.HttpStatusCode.InternalServerError:
+        //                return apiResponse(new responseFailedSystemError());
+        //            default:
+
+        //                //var memberCards = GetCardForPrint3();
+
+        //                return apiResponse(new response { result = 0, obj = memberCards });
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //        return apiResponse(new responseFailedSystemError { message = ex.Message });
+        //    }
+        //}
+
+        //[Route("~/api/getCardForPrint2")]
+        //[HttpPost]
+        //public IHttpActionResult GetCardForPrint2(searchParam sp)
+        //{
+        //    try
+        //    {
+        //        var member = GetCardForPrint3();
+
+        //        return apiResponse(new response { result = 0, obj = member });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //        return apiResponse(new responseFailedSystemError { message = ex.Message });
+        //    }
+        //}
+
+        public object GetCardForPrint3()
+        {
+            try
+            {
+                afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append("select c.id as cardId, m.id as memberId, m.cif, c.\"cardNo\" as cardNo, ");
+                sb.Append("m.card_name as cardName, m.first_name, m.middle_name, m.last_name, m.suffix, ");
+                sb.Append("m.gender, m.date_post as dateCaptured, m.membership_date, b.\"branchName\" as branch_issued, ");
+                sb.Append("m.mobile_nos as mobileNo, m.terminal_id as terminalId, c.date_post as datePrinted, ");
+                sb.Append("c.time_post as timePrinted ");
+                sb.Append("from afpslai_emv.member m left outer join (select * from afpslai_emv.card where afpslai_emv.card.is_cancel = false or afpslai_emv.card.is_cancel is null) c ON m.id = c.member_id ");
+                sb.Append("left outer join afpslai_emv.branch b on b.id = m.branch_id ");
+                sb.Append("where m.is_cancel = false and m.cif = '1111111111103' ");
+
+                var member = ent.Database.SqlQuery<cardForPrint>(sb.ToString()).ToList();
+
+                return member;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return null;
             }
         }
 
@@ -2068,17 +2230,50 @@ namespace accAfpslaiEmvSrvc.Controllers
                         dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
                         var card = Newtonsoft.Json.JsonConvert.DeserializeObject<card>(objPayload.ToString());
 
-                        if (string.IsNullOrEmpty(card.cardNo)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        if (string.IsNullOrEmpty(card.cardNo) && card.id == 0) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
                         else if (card.member_id == null || card.member_id == 0) return apiResponse(new responseFailedBadRequest { message = "Missing reference member id" });
                         else
                         {
-                            card.date_post = DateTime.Now.Date;
-                            card.time_post = DateTime.Now.TimeOfDay;
-                            card.is_cancel = false;
-                            ent.cards.Add(card);
-                            ent.SaveChanges();
+                            int memberId = card.member_id;
+                            string cif = "";
+                            var objMember = ent.members.Where(o => o.id == memberId).FirstOrDefault();
+                            if (objMember != null) cif = objMember.cif;
+                            
+                            if (card.id == 0)
+                            {
+                                card.date_post = DateTime.Now.Date;
+                                card.time_post = DateTime.Now.TimeOfDay;
+                                card.is_cancel = false;
+                                ent.cards.Add(card);
+                                ent.SaveChanges();
 
-                            return apiResponse(new responseSuccessNewRecord { obj = card.id });
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Cif {0} card id {1} is added. Card number is '{2}' - {3}", cif, card.id, card.cardNo, System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")));
+
+                                return apiResponse(new responseSuccessNewRecord { obj = card.id });
+                            }
+                            else
+                            {
+                                int cardId = card.id;
+                                var obj = ent.cards.Where(o => o.id == cardId).FirstOrDefault();
+                                if (obj != null)
+                                {
+                                    //if (card.date_post == null) obj.date_post = DateTime.Now.Date; else obj.date_post = card.date_post;
+                                    //if (card.time_post == null) obj.time_post = DateTime.Now.TimeOfDay; else obj.time_post = card.time_post;
+                                    obj.date_post = card.date_post;
+                                    obj.time_post = card.time_post;
+                                    obj.cardNo = card.cardNo;
+                                    obj.is_cancel = card.is_cancel;
+                                    ent.SaveChanges();
+
+                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("Cif {0} card id {1} is modified. Card number is '{2}' - {3}", cif, cardId, card.cardNo, System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")));
+
+                                    return apiResponse(new responseSuccessUpdateRecord { obj = card.id });
+                                }
+                                else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
+                            }
+
+
+                           
                         }
                 }
             }
