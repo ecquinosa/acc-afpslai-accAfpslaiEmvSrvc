@@ -1353,6 +1353,11 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     cfp.terminalId = memberCard.terminalId;
                                     //if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost).ToString("MM/dd/yyyy") + " " + memberCard.cTimePost;
                                     if (!string.IsNullOrEmpty(memberCard.cDatePost)) cfp.datePrinted = Convert.ToDateTime(memberCard.cDatePost);
+                                    if (!string.IsNullOrEmpty(memberCard.cTimePost))
+                                    {
+                                        TimeSpan ts = TimeSpan.Parse(memberCard.cTimePost);
+                                        cfp.timePrinted = ts;
+                                    }
                                     cfp.base64Photo = base64Photo;
                                 }
                                 else return apiResponse(new response { result = 1, message = "Photo not found" });

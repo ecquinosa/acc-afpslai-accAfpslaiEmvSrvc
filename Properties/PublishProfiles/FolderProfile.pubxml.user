@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PublishTargetUrl>D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\bin\app.publish\</_PublishTargetUrl>
-    <History>True|2021-08-18T07:09:33.1951764Z;True|2021-08-09T14:20:25.3966628+08:00;True|2021-07-29T23:11:33.8869454+08:00;True|2021-07-27T20:31:22.2795788+08:00;True|2021-06-26T09:05:27.6820325+08:00;True|2021-06-24T11:26:39.0991700+08:00;True|2021-06-21T18:18:46.4443361+08:00;True|2021-06-17T19:28:48.6602691+08:00;True|2021-06-11T17:25:01.8278150+08:00;</History>
+    <History>True|2021-08-25T14:04:59.2835893Z;True|2021-08-25T19:07:32.0320841+08:00;False|2021-08-25T19:03:24.5032024+08:00;False|2021-08-25T19:02:41.7969663+08:00;False|2021-08-25T19:00:24.2956015+08:00;False|2021-08-25T19:00:13.7543607+08:00;False|2021-08-25T18:49:51.9281815+08:00;False|2021-08-25T18:49:38.3429432+08:00;True|2021-08-25T17:54:03.3910439+08:00;True|2021-08-18T15:09:33.1951764+08:00;True|2021-08-09T14:20:25.3966628+08:00;True|2021-07-29T23:11:33.8869454+08:00;True|2021-07-27T20:31:22.2795788+08:00;True|2021-06-26T09:05:27.6820325+08:00;True|2021-06-24T11:26:39.0991700+08:00;True|2021-06-21T18:18:46.4443361+08:00;True|2021-06-17T19:28:48.6602691+08:00;True|2021-06-11T17:25:01.8278150+08:00;</History>
   </PropertyGroup>
   <ItemGroup>
     <File Include="Areas/HelpPage/HelpPage.css">
@@ -78,16 +78,16 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>07/27/2021 18:40:22</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvObjct.dll">
-      <publishTime>08/18/2021 15:09:29</publishTime>
+      <publishTime>08/25/2021 17:54:00</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvObjct.pdb">
-      <publishTime>08/18/2021 15:09:29</publishTime>
+      <publishTime>08/25/2021 17:54:00</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvSrvc.dll">
-      <publishTime>08/18/2021 15:09:31</publishTime>
+      <publishTime>08/25/2021 22:04:57</publishTime>
     </File>
     <File Include="bin/accAfpslaiEmvSrvc.pdb">
-      <publishTime>08/18/2021 15:09:31</publishTime>
+      <publishTime>08/25/2021 22:04:57</publishTime>
     </File>
     <File Include="bin/Antlr3.Runtime.dll">
       <publishTime>06/19/2021 16:53:14</publishTime>

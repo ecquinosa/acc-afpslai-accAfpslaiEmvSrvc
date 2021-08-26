@@ -1,0 +1,4 @@
+2021-08-25 19:19:49.4434|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
+2021-08-25 19:20:38.2632|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
+2021-08-25 19:26:11.7477|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
+2021-08-25 19:27:04.2118|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetCardForPrint|An error occurred while executing the command definition. See the inner exception for details.
