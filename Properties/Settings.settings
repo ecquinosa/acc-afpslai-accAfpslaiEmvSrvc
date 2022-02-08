@@ -29,5 +29,23 @@
     <Setting Name="UserNameMaxLength" Type="System.Int16" Scope="Application">
       <Value Profile="(Default)">20</Value>
     </Setting>
+    <Setting Name="CBS_API_Url" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://voyageruatcore.afpslai.com.ph:1010/api/transaction/runtransaction/</Value>
+    </Setting>
+    <Setting Name="CBS_TranCode" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">4351</Value>
+    </Setting>
+    <Setting Name="CBS_UserId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CMSUser</Value>
+    </Setting>
+    <Setting Name="CBS_Username" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CMSUser</Value>
+    </Setting>
+    <Setting Name="CBS_Channel" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CMS</Value>
+    </Setting>
+    <Setting Name="CBS_SourceId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CMS</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

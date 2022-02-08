@@ -388,3 +388,4 @@ C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\bin\System.Web.WebPages.Razor.xml
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\bin\Antlr3.Runtime.pdb
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\obj\Debug\accAfpslaiEmvSrvc.csproj.CopyComplete
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\bin\accAfpslaiEmvObjct.dll.config

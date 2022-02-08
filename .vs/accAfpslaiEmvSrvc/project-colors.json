@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "e48ee19b-cdd5-4f7b-82ce-5b5eb1804de7": {
+      "ProjectGuid": "e48ee19b-cdd5-4f7b-82ce-5b5eb1804de7",
+      "DisplayName": "accAfpslaiEmvObjct",
+      "ColorIndex": 0
+    },
+    "051478a1-d20a-49f6-9796-49ec3d376ffe": {
+      "ProjectGuid": "051478a1-d20a-49f6-9796-49ec3d376ffe",
+      "DisplayName": "accAfpslaiEmvSrvc",
+      "ColorIndex": 1
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 2
+}

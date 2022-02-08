@@ -1,0 +1,3 @@
+2021-09-24 09:55:10.4388|ERROR|<no type>.CallSite.Target|Failed to bind cif 1111111111201 and card no 6389760030117171 to CMS. 99 System exception
+2021-09-24 13:50:12.9716|ERROR|<no type>.CallSite.Target|Failed to bind cif 9999999 and card no 6389760030117171 to CMS. 06 Pull CIF No info exception
+2021-09-24 13:50:59.1698|ERROR|<no type>.CallSite.Target|Failed to bind cif 9999999 and card no 6389760030117171 to CMS. 06 Pull CIF No info exception

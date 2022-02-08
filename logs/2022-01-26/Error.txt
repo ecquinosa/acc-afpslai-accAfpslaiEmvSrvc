@@ -1,0 +1,9 @@
+2022-01-26 15:59:22.1719|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Object reference not set to an instance of an object.
+2022-01-26 16:15:23.6528|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Value cannot be null.
+Parameter name: value
+2022-01-26 16:16:16.6016|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Object reference not set to an instance of an object.
+2022-01-26 16:51:27.6531|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Object reference not set to an instance of an object.
+2022-01-26 21:19:29.9705|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Value cannot be null.
+Parameter name: source
+2022-01-26 21:19:29.9705|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSDatav2|Value cannot be null.
+Parameter name: source

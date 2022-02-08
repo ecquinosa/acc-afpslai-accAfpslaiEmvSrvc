@@ -32,6 +32,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             var payloadAuthEncrypted = reqPayload.authentication;
             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
+            //string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
             string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
             string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
             if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
@@ -167,6 +168,65 @@ namespace accAfpslaiEmvSrvc.Helpers
             }
         }
 
+        public static bool cbsCifDetailSearch(cif_detail_search_request cdsRequest, ref cif_detail_search_response cdsResponse, ref string msg)
+        {
+            string soapResponse = "";
+            string err = "";            
+            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(cdsRequest);
+            bool response = ExecuteApiRequestCBS(Properties.Settings.Default.CBS_API_Url,soapStr, cdsRequest.Salt, ref soapResponse, ref err);
+            if (response)
+            {
+                cdsResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<cif_detail_search_response>(soapResponse);
+
+                if (cdsResponse.HostReply.Code == 1)
+                {
+                    msg = cdsResponse.HostReply.Description;
+
+                    return true;
+                }
+                else
+                {
+                    msg = string.Format("{0} {1}", cdsResponse.HostReply.Code, cdsResponse.HostReply.Description);
+                    return false;
+                }
+            }
+            else
+            {
+                msg = err;
+                return false;
+            }
+        }
+
+        
+        public static bool cbsCifDetailSearchCS(accAfpslaiEmvObjct.CBS.Core.Message.TransactionServiceMessageBase cdsRequest, string salt, ref cif_detail_search_response cdsResponse, ref string msg)
+        {
+            string soapResponse = "";
+            string err = "";
+            string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(cdsRequest);
+            bool response = ExecuteApiRequestCBS(Properties.Settings.Default.CBS_API_Url, soapStr, salt, ref soapResponse, ref err);
+            if (response)
+            {
+                cdsResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<cif_detail_search_response>(soapResponse);
+
+                if (cdsResponse.HostReply.Code == 1)
+                {
+                    msg = cdsResponse.HostReply.Description;
+
+                    return true;
+                }
+                else
+                {
+                    msg = string.Format("{0} {1}", cdsResponse.HostReply.Code, cdsResponse.HostReply.Description);
+                    return false;
+                }
+            }
+            else
+            {
+                msg = err;
+                return false;
+            }
+        }
+
         public static bool ExecuteApiRequest(string url, string soapStr, ref string soapResponse, ref string err)
         {
             //System.Net.HttpWebRequest myHttpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
@@ -210,6 +270,58 @@ namespace accAfpslaiEmvSrvc.Helpers
             finally
             {
                 client.Dispose();                
+            }
+        }
+
+        public static bool ExecuteApiRequestCBS(string url, string soapStr, string salt, ref string soapResponse, ref string err)
+        {
+            //System.Net.HttpWebRequest myHttpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+
+            try
+            {
+                var uri = new Uri(url);
+                string baseUrl = string.Format("http://{0}", uri.Authority);
+                if (url.Contains("https://")) baseUrl = string.Format("https://{0}", uri.Authority);
+                string otherUrl = uri.LocalPath;
+
+                client.BaseAddress = new Uri(baseUrl);
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", txtToken.Text);
+               
+
+                var buffer = System.Text.Encoding.UTF8.GetBytes(soapStr);
+                var byteContent = new System.Net.Http.ByteArrayContent(buffer);
+                byteContent.Headers.Clear();
+                byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                byteContent.Headers.TryAddWithoutValidation("TranCode", Properties.Settings.Default.CBS_TranCode);
+                byteContent.Headers.TryAddWithoutValidation("Username", Properties.Settings.Default.CBS_Username);
+                byteContent.Headers.TryAddWithoutValidation("SeqNo", "100");
+                byteContent.Headers.TryAddWithoutValidation("TimeStamp", "1");
+                byteContent.Headers.TryAddWithoutValidation("Salt", salt);
+                byteContent.Headers.TryAddWithoutValidation("Channel", Properties.Settings.Default.CBS_Channel);
+                byteContent.Headers.ContentLength = buffer.Length;
+
+                System.Net.Http.HttpResponseMessage response = client.PostAsync(otherUrl, byteContent).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    soapResponse = response.Content.ReadAsStringAsync().Result;
+                    return true;
+                }
+                else
+                {
+                    err = string.Format("{0} {1}", response.StatusCode, response.Content.ReadAsStringAsync().Result.ToString()); //response.ReasonPhrase);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach middle server api.";
+                else err = ex.Message;
+                return false;
+            }
+            finally
+            {
+                client.Dispose();
             }
         }
 

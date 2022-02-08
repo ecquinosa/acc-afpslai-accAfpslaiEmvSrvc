@@ -132,7 +132,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             Helpers.Utilities.SaveApiRequestLog(arl);
                             Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
                             logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
-                            if (!Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo, Environment.NewLine, Environment.NewLine + msg) });
+                            if (Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo, Environment.NewLine, Environment.NewLine + msg) });
                             else return apiResponse(new responseSuccess { message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo,Environment.NewLine, Environment.NewLine + msg) });
                         }
                 }
@@ -238,6 +238,165 @@ namespace accAfpslaiEmvSrvc.Controllers
                             return apiResponse(new response { result = 0, obj = memberCBS });
                         }
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }        
+
+        [Route("~/api/pullCBSDatav2")]
+        [HttpPost]
+        public IHttpActionResult PullCBSDatav2(cbsRequest payload)
+        {
+            try
+            {
+                //string payload = reqPayload.payload;
+
+                //var validationResponse = Helpers.Utilities.ValidateRequest(reqPayload, ref authUserId);
+
+                //switch (validationResponse)
+                //{
+                //    case (int)System.Net.HttpStatusCode.Unauthorized:
+                //        return apiResponse(new responseFailedUnauthorized());
+                //    case (int)System.Net.HttpStatusCode.BadRequest:
+                //        return apiResponse(new responseFailedBadRequest());
+                //    case (int)System.Net.HttpStatusCode.InternalServerError:
+                //        return apiResponse(new responseFailedSystemError());
+                //    default:
+                //dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                string cif = payload.cif;
+                string branchId = "000";
+
+                afpslai_emvEntities ent = new afpslai_emvEntities();
+                var b = ent.branches.Where(o => o.branchName.Equals(payload.branch)).FirstOrDefault();
+                
+                if (b != null) branchId = b.code;              
+
+                //if (objPayload.cif != null) cif = objPayload.cif;
+                //if (objPayload.branchCode != null) branchCode = objPayload.branchCode;
+
+                if (string.IsNullOrEmpty(cif)) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
+                else
+                {
+                    branchId = "111";
+
+                    string msg = "";
+                    
+                    cif_detail_search_response cdsResponse = null;                   
+
+                    int sequenceNo = 100;
+                    DateTime timeStamp = DateTime.Now;
+                    string salt = Utilities.GenerateCBSSalt(Properties.Settings.Default.CBS_Username, sequenceNo.ToString(), "1");
+
+                    var message = new accAfpslaiEmvObjct.CBS.Core.Message.CMSCIFDetailInquiryMessage
+                    {
+                        Header = new accAfpslaiEmvObjct.CBS.Core.Message.TransactionMessageHeader
+                        {
+                            SourceId = "",
+                            TranCode = Properties.Settings.Default.CBS_TranCode ?? string.Empty,
+                            ReferenceID = new Guid().ToString(),
+                            BusinessDate = DateTime.Now.Date,
+                            TransactionTime = timeStamp,
+                            TransactionStatus = 0,
+                            ProcessingMode = 0,
+                            UserId = Properties.Settings.Default.CBS_UserId ?? string.Empty,
+                            BranchCode = branchId ?? string.Empty,
+                            SequenceNo = sequenceNo,
+                            ClientWorkstationName = System.Net.Dns.GetHostName(),
+                            ClientIPAddress = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList[0].ToString()
+                        },                        
+                        CIF_NO = cif ?? string.Empty
+                    };
+
+                    cbsData memberCBS = new cbsData();
+                    if (Helpers.Utilities.cbsCifDetailSearchCS(message, salt, ref cdsResponse, ref msg))
+                    //if (Helpers.Utilities.cbsCifDetailSearch(cdsRequest, ref cdsResponse, ref msg))
+                    {
+                        
+                            memberCBS.cif = cdsResponse.PersonalInfo.CIF_NO;
+                            memberCBS.first_name = cdsResponse.PersonalInfo.FIRST_NAME;
+                            memberCBS.middle_name = cdsResponse.PersonalInfo.MIDDLE_NAME;
+                            memberCBS.last_name = cdsResponse.PersonalInfo.LAST_NAME;
+                            memberCBS.suffix = cdsResponse.PersonalInfo.SUFFIX_NAME;
+                            memberCBS.gender = cdsResponse.PersonalInfo.SEX;                           
+                            memberCBS.civilStatus = Utilities.GetCBS_CivilStatus(cdsResponse.PersonalInfo.MARITAL_STATUS);
+                            memberCBS.membershipStatus = Utilities.GetCBS_ClientStatusCode(cdsResponse.PersonalInfo.CLIENT_STATUS_CODE);
+                            memberCBS.membershipType = Utilities.GetCBS_ClientType(cdsResponse.PersonalInfo.CLIENT_TYPE);
+                            memberCBS.membership_date = DateTime.Now.Date;
+                            memberCBS.date_birth = Convert.ToDateTime(cdsResponse.PersonalInfo.BIRTH_CORP_DATE);
+                            memberCBS.contact_nos = "";
+
+                            var contactMobileNo = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("M"))).FirstOrDefault();
+                            var contactEmail = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("E"))).FirstOrDefault();
+                            if (contactMobileNo != null) memberCBS.mobile_nos = contactMobileNo.MOBILE_CTY_CODE + contactMobileNo.MOBILE_PREFIX + contactMobileNo.MOBILE_NUMBER;
+                            if (contactEmail != null) memberCBS.email = contactEmail.CONTACT_VALUE;
+                            else memberCBS.mobile_nos = "";
+
+                            var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("R"))).FirstOrDefault();
+                            if (addressCurrent != null)
+                            {
+                                memberCBS.address1 = addressCurrent.ADDRESS1;
+                                memberCBS.address2 = addressCurrent.ADDRESS2;
+                                memberCBS.address3 = addressCurrent.ADDRESS3 + " " + addressCurrent.ADDRESS4;
+                                memberCBS.city = addressCurrent.CITY;
+                                memberCBS.province = addressCurrent.STATE;
+                                memberCBS.zipCode = addressCurrent.ZIP_CODE;
+                                memberCBS.country = "Philippines";
+                            }
+                            else
+                            {
+                                var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("P"))).FirstOrDefault();
+
+                                if (addressPermanent != null)
+                                {
+                                    memberCBS.address1 = addressPermanent.ADDRESS1;
+                                    memberCBS.address2 = addressPermanent.ADDRESS2;
+                                    memberCBS.address3 = addressPermanent.ADDRESS3 + " " + addressPermanent.ADDRESS4;
+                                    memberCBS.city = addressPermanent.CITY;
+                                    memberCBS.province = addressPermanent.STATE;
+                                    memberCBS.zipCode = addressPermanent.ZIP_CODE;
+                                    memberCBS.country = "Philippines";
+                                }
+                                else
+                                {
+                                    memberCBS.address1 = "";
+                                    memberCBS.address2 = "";
+                                    memberCBS.address3 = "";
+                                    memberCBS.city = "";
+                                    memberCBS.province = "";
+                                    memberCBS.zipCode = "";
+                                    memberCBS.country = "Philippines";
+                                }
+                            }
+
+                            memberCBS.emergency_contact_name = "";
+                            memberCBS.emergency_contact_nos = memberCBS.contact_nos;
+                            memberCBS.associateType = "";
+                            memberCBS.principal_cif = "";
+                            memberCBS.principal_name = "";
+                            memberCBS.cca_no = "";
+
+                            return apiResponse(new response { result = 0, obj = memberCBS });
+                        
+                    }
+                    else
+                    {
+                        api_request_log arl = new api_request_log();
+                        arl.api_owner = "cbs";
+                        arl.api_name = "pullCBSData";
+                        arl.is_success = false;
+                        arl.request = cif;
+                        arl.response = msg;
+                        Helpers.Utilities.SaveApiRequestLog(arl);
+                    }
+
+                    //return apiResponse(new response { result = 0, obj = memberCBS });
+                    return apiResponse(new responseFailedBadRequest { message = msg });
+                }
+                //}
             }
             catch (Exception ex)
             {
