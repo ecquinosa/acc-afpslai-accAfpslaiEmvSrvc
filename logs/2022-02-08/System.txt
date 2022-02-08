@@ -1,0 +1,2 @@
+2022-02-08 22:00:32.5300|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateRequest|Object reference not set to an instance of an object.
+2022-02-08 22:00:35.5773|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.GetAssociateType|Object reference not set to an instance of an object.

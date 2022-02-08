@@ -122,6 +122,8 @@ namespace accAfpslaiEmvSrvc.Helpers
 
                             if (!isMatch) isAuthorize = false; else userId = payloadAuth.userId;
 
+                            //isAuthorize = false;
+
                         }
                         else isAuthorize = false;
                     }
@@ -216,7 +218,7 @@ namespace accAfpslaiEmvSrvc.Helpers
                 }
                 else
                 {
-                    msg = string.Format("{0} {1}", cdsResponse.HostReply.Code, cdsResponse.HostReply.Description);
+                    msg = string.Format("{0} {1} \r\r{2}", cdsResponse.HostReply.Code, cdsResponse.HostReply.Description, cdsResponse.HostMessages[0].Description);
                     return false;
                 }
             }
