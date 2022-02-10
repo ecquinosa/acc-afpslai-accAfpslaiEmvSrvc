@@ -388,3 +388,4 @@ C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\obj\Release\accAfpslaiEmvSrvc.csproj.Co
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\obj\Release\accAfpslaiEmvSrvc.csproj.CopyComplete
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\obj\Release\accAfpslaiEmvSrvc.dll
 C:\Drive D\acc-afpslai-accAfpslaiEmvSrvc\obj\Release\accAfpslaiEmvSrvc.pdb
+D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\bin\accAfpslaiEmvObjct.dll.config
