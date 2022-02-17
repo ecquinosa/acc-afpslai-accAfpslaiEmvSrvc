@@ -157,5 +157,14 @@ namespace accAfpslaiEmvSrvc.Properties {
                 return ((string)(this["CBS_SourceId"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("999")]
+        public string CBS_BranchId {
+            get {
+                return ((string)(this["CBS_BranchId"]));
+            }
+        }
     }
 }

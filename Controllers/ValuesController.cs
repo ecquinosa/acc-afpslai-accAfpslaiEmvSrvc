@@ -94,7 +94,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                     if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
                     {
-                        Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
+                        Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse),2);
                         afpslai_emvEntities ent = new afpslai_emvEntities();
                         int cardId = cbsCms.cardId;
                         var card = ent.cards.Where(o => (o.id.Equals(cardId))).FirstOrDefault();
@@ -115,7 +115,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         arl.is_success = false;
                         arl.response = msg;
                         Helpers.Utilities.SaveApiRequestLog(arl);
-                        Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse));
+                        Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse),1);
                         logger.Error(string.Format("Failed to bind cif {0} and card no {1} to CMS. {2}", cbsCms.cif, cbsCms.cardNo, msg));
                         if (Properties.Settings.Default.IsEnforcePMS) return apiResponse(new response { result = 1, message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo, Environment.NewLine, Environment.NewLine + msg) });
                         else return apiResponse(new responseSuccess { message = string.Format("Failed to bind cif {0} and card no {1} to CMS.{2}{3}", cbsCms.cif, cbsCms.cardNo, Environment.NewLine, Environment.NewLine + msg) });
@@ -256,22 +256,23 @@ namespace accAfpslaiEmvSrvc.Controllers
                     var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
                     string cif = "";
-                    string branchId = "000";
+                    string branchId = Properties.Settings.Default.CBS_BranchId ?? "000";
                     string branch = "";
 
                     if (objPayload.cif != null) cif = objPayload.cif;
                     if (payloadAuth.branch != null) branch = payloadAuth.branch;
+                    
+                    if (branchId == "000")
+                    {
+                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                        var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
 
-                    afpslai_emvEntities ent = new afpslai_emvEntities();
-                    var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
-
-                    if (b != null) branchId = b.code;
+                        if (b != null) branchId = b.code;
+                    }                    
 
                     if (string.IsNullOrEmpty(cif)) return apiResponse(new responseFailedBadRequest { message = "Missing required field" });
                     else
-                    {
-                        branchId = "999";
-
+                    {  
                         string msg = "";
 
                         cif_detail_search_response cdsResponse = null;
@@ -377,7 +378,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             arl.is_success = false;
                             arl.request = cif;
                             arl.response = msg;
-                            Helpers.Utilities.SaveApiRequestLog(arl);
+                            Helpers.Utilities.SaveApiRequestLog(arl);                           
+                            Helpers.Utilities.SavePayloadWithResponse(reqPayload, msg, 2);
                         }
                         
                         return apiResponse(new responseFailedBadRequest { message = msg });
@@ -1608,20 +1610,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                     }
                     catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
                     {
-                        //Exception raise = dbEx;
-                        foreach (var validationErrors in dbEx.EntityValidationErrors)
-                        {
-                            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-                            foreach (var validationError in validationErrors.ValidationErrors)
-                            {
-                                string message = string.Format("{0}:{1}",
-                                    validationErrors.Entry.Entity.ToString(),
-                                    validationError.ErrorMessage);
-
-                                sb.Append(message + ". ");
-                            }
-                        }
+                        Helpers.Utilities.SaveDbEntityValidationException(dbEx);
                         //throw raise;
                     }
 

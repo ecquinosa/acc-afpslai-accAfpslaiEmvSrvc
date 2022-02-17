@@ -47,5 +47,8 @@
     <Setting Name="CBS_SourceId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">CMS</Value>
     </Setting>
+    <Setting Name="CBS_BranchId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">999</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

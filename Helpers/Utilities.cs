@@ -16,24 +16,32 @@ namespace accAfpslaiEmvSrvc.Helpers
             else return errMsg;
         }
 
-        public static void SavePayload(requestPayload reqPayload)
+        public static void SavePayload(requestPayload reqPayload, short intType = 0)
         {
+            string payloadType = "";
+            if (intType == 1) payloadType = @"\CMS";
+            else if (intType == 2) payloadType = @"\CBS";
+
             var payloadAuthEncrypted = reqPayload.authentication;
             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
-            string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
+            string directoryPath = string.Format(@"{0}\PAYLOAD\{1}{2}\{3}", Properties.Settings.Default.LogRepo, payloadType, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
             string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
             if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
             System.IO.File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload));
         }
 
-        public static void SavePayloadWithResponse(requestPayload reqPayload, string apiResponse)
+        public static void SavePayloadWithResponse(requestPayload reqPayload, string apiResponse, short intType = 0)
         {
+            string payloadType = "";
+            if (intType == 1) payloadType = @"\CMS";
+            else if (intType == 2) payloadType = @"\CBS";
+
             var payloadAuthEncrypted = reqPayload.authentication;
             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));
 
             //string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
-            string directoryPath = string.Format(@"{0}\PAYLOAD\{1}\{2}", Properties.Settings.Default.LogRepo, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
+            string directoryPath = string.Format(@"{0}\PAYLOAD\{1}{2}\{3}", Properties.Settings.Default.LogRepo, payloadType, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyy-MM-dd"), payloadAuth.branch);
             string fileName = string.Format(@"{0}\{1}_{2}.txt", directoryPath, payloadAuth.userName, Convert.ToDateTime(payloadAuth.dateRequest).ToString("yyyyMMdd_hhmmss"), payloadAuth.branch);
             if (!System.IO.Directory.Exists(directoryPath)) System.IO.Directory.CreateDirectory(directoryPath);
             System.IO.File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(reqPayload) + Environment.NewLine + Environment.NewLine + "api response:" + Environment.NewLine + apiResponse);
@@ -335,6 +343,26 @@ namespace accAfpslaiEmvSrvc.Helpers
         public static DateTime DbDataEndDate()
         {
             return DateTime.Now.Date;
+        }
+
+        public static void SaveDbEntityValidationException(System.Data.Entity.Validation.DbEntityValidationException dbEx)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            //Exception raise = dbEx;
+            foreach (var validationErrors in dbEx.EntityValidationErrors)
+            {
+                foreach (var validationError in validationErrors.ValidationErrors)
+                {
+                    string message = string.Format("{0}:{1}",
+                        validationErrors.Entry.Entity.ToString(),
+                        validationError.ErrorMessage);
+
+                    sb.Append(message + ". ");
+                }
+            }
+
+            accAfpslaiEmvSrvc.Controllers.ValuesController.logger.Error(sb.ToString());
         }
 
     }
