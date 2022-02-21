@@ -313,7 +313,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             memberCBS.civilStatus = Utilities.GetCBS_CivilStatus(cdsResponse.PersonalInfo.MARITAL_STATUS);
                             memberCBS.membershipStatus = Utilities.GetCBS_ClientStatusCode(cdsResponse.PersonalInfo.CLIENT_STATUS_CODE);
                             memberCBS.membershipType = Utilities.GetCBS_ClientType(cdsResponse.PersonalInfo.CLIENT_TYPE);
-                            memberCBS.membership_date = DateTime.Now.Date;
+                            memberCBS.membership_date = Convert.ToDateTime(cdsResponse.PersonalInfo.DATE_OPEN);
                             memberCBS.date_birth = Convert.ToDateTime(cdsResponse.PersonalInfo.BIRTH_CORP_DATE);
                             memberCBS.contact_nos = "";
 
@@ -321,7 +321,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             var contactEmail = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("E"))).FirstOrDefault();
                             if (contactMobileNo != null) memberCBS.mobile_nos = contactMobileNo.MOBILE_CTY_CODE + contactMobileNo.MOBILE_PREFIX + contactMobileNo.MOBILE_NUMBER;
                             if (contactEmail != null) memberCBS.email = contactEmail.CONTACT_VALUE;
-                            else memberCBS.mobile_nos = "";
+                            //else memberCBS.mobile_nos = "";
 
                             var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("R"))).FirstOrDefault();
                             if (addressCurrent != null)
@@ -363,8 +363,10 @@ namespace accAfpslaiEmvSrvc.Controllers
                             memberCBS.emergency_contact_name = "";
                             memberCBS.emergency_contact_nos = memberCBS.contact_nos;
                             memberCBS.associateType = "";
-                            memberCBS.principal_cif = "";
-                            memberCBS.principal_name = "";
+                            memberCBS.principal_cif = cdsResponse.PersonalInfo.ENDOSER_CIF_NO;
+                            string principalMiddleName = cdsResponse.PersonalInfo.ENDOSER_MIDDLE_NAME;
+                            if (principalMiddleName != "") principalMiddleName += " ";
+                            memberCBS.principal_name = String.Concat(cdsResponse.PersonalInfo.ENDOSER_FIRST_NAME, " ", principalMiddleName, cdsResponse.PersonalInfo.ENDOSER_LAST_NAME, " ", cdsResponse.PersonalInfo.ENDOSER_SUFFIX_NAME).Trim();
                             memberCBS.cca_no = "";
 
                             return apiResponse(new response { result = 0, obj = memberCBS });
