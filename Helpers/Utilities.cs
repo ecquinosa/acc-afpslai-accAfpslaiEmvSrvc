@@ -34,8 +34,8 @@ namespace accAfpslaiEmvSrvc.Helpers
         public static void SavePayloadWithResponse(requestPayload reqPayload, string apiResponse, short intType = 0)
         {
             string payloadType = "";
-            if (intType == 1) payloadType = @"\CMS";
-            else if (intType == 2) payloadType = @"\CBS";
+            if (intType == 1) payloadType = @"CMS\";
+            else if (intType == 2) payloadType = @"CBS\";
 
             var payloadAuthEncrypted = reqPayload.authentication;
             var payloadAuth = Newtonsoft.Json.JsonConvert.DeserializeObject<requestCredential>(accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(payloadAuthEncrypted));

@@ -362,7 +362,7 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                             memberCBS.emergency_contact_name = "";
                             memberCBS.emergency_contact_nos = memberCBS.contact_nos;
-                            memberCBS.associateType = "";
+                            memberCBS.associateType = Utilities.GetCBS_AssociateTypeCode(cdsResponse.PersonalInfo.CLIENT_SUB_TYPE); ;
                             memberCBS.principal_cif = cdsResponse.PersonalInfo.ENDOSER_CIF_NO;
                             string principalMiddleName = cdsResponse.PersonalInfo.ENDOSER_MIDDLE_NAME;
                             if (principalMiddleName != "") principalMiddleName += " ";
@@ -1107,7 +1107,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                    from rr in table10.DefaultIfEmpty()
                                    join cntry in ent.countries on a.country_id equals cntry.id into table11
                                    from cntry in table11.DefaultIfEmpty()
-                                   where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && m.date_post >= startDate && m.date_post <= endDate &&
+                                   where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && c.date_post != null && m.date_post >= startDate && m.date_post <= endDate &&
                                    (branchId == 0 || branchId == m.branch_id) &&
                                    (memberId == 0 || memberId == m.id) &&
                                    (cif == "" || cif == m.cif) &&
