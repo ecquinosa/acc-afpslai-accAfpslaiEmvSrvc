@@ -92,7 +92,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                     arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
                     arl.request = objPayload.ToString();
 
-                    if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
+                    //if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
+                    if (Helpers.Utilities.wiseCardcardBindCifNo_Test(cbsCms, ref cmsResponse, ref msg))
                     {
                         Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse),2);
                         afpslai_emvEntities ent = new afpslai_emvEntities();

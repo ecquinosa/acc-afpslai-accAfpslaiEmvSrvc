@@ -154,7 +154,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             //string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo});
             //string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, mobileNo = cbsCms.mobileNo, nameOnCard = cbsCms.cardName });
             string soapStr = Newtonsoft.Json.JsonConvert.SerializeObject(new cmsRequest { cif = cbsCms.cif, cardNo = cbsCms.cardNo, nameOnCard = cbsCms.cardName, requestId = cbsCms.cardId.ToString() });
-            bool response = ExecuteApiRequest(Properties.Settings.Default.WiseCard_cardBindCifNo_Url, soapStr, ref soapResponse, ref err);
+            bool response = ExecuteApiRequestCMS(Properties.Settings.Default.WiseCard_cardBindCifNo_Url, soapStr, ref soapResponse, ref err);
             if (response)
             {
                 cmsResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<cmsResponse>(soapResponse);
@@ -176,6 +176,15 @@ namespace accAfpslaiEmvSrvc.Helpers
                 msg = err;
                 return false;
             }
+        }
+
+        public static bool wiseCardcardBindCifNo_Test(cbsCms cbsCms, ref cmsResponse cmsResponse, ref string msg)
+        {
+            var resp =  new cmsResponse();
+            resp.resultCode = "00";
+            resp.resultMessage = "SUCCESS";
+            cmsResponse = resp;
+            return true;
         }
 
         public static bool cbsCifDetailSearch(cif_detail_search_request cdsRequest, ref cif_detail_search_response cdsResponse, ref string msg)
@@ -283,6 +292,52 @@ namespace accAfpslaiEmvSrvc.Helpers
             }
         }
 
+        public static bool ExecuteApiRequestCMS(string url, string soapStr, ref string soapResponse, ref string err)
+        {
+            //System.Net.HttpWebRequest myHttpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+
+            try
+            {
+                var uri = new Uri(url);
+                string baseUrl = string.Format("http://{0}", uri.Authority);
+                if (url.Contains("https://")) baseUrl = string.Format("https://{0}", uri.Authority);
+                string otherUrl = uri.LocalPath;
+
+                client.BaseAddress = new Uri(baseUrl);
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", txtToken.Text);
+
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                var buffer = System.Text.Encoding.UTF8.GetBytes(soapStr);
+                var byteContent = new System.Net.Http.ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                byteContent.Headers.ContentLength = buffer.Length;
+
+                System.Net.Http.HttpResponseMessage response = client.PostAsync(otherUrl, byteContent).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    soapResponse = response.Content.ReadAsStringAsync().Result;
+                    return true;
+                }
+                else
+                {
+                    err = string.Format("{0} {1}", response.StatusCode, response.ReasonPhrase);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach cms api.";
+                else err = ex.Message;
+                return false;
+            }
+            finally
+            {
+                client.Dispose();
+            }
+        }
+
         public static bool ExecuteApiRequestCBS(string url, string soapStr, string salt, ref string soapResponse, ref string err)
         {
             //System.Net.HttpWebRequest myHttpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
@@ -325,7 +380,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             }
             catch (Exception ex)
             {
-                if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach middle server api.";
+                if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach cbs api.";
                 else err = ex.Message;
                 return false;
             }
