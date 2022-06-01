@@ -1,0 +1,9 @@
+v1.0.0.10 May 04, 2022
+- added getMemberReport endpoint
+- added getMemberReport enum in accAfpslaiEmvObjct
+- added getMemberReport in accAfpslaiEmvObjct\MiddleServerApi
+
+v1.0.0.11 June 01, 2022
+- revise GetMembersPrintingTypeSummary as per qa comment. also added sort by date
+- revise GetMembersRecardReasonSummary as per qa comment. also added sort by date
+- revise GetMemberReport and added sort by date

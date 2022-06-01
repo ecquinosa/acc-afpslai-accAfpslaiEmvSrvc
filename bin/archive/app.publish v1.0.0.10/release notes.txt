@@ -1,0 +1,4 @@
+v1.0.0.10 May 04, 2022
+- added getMemberReport endpoint
+- added getMemberReport enum in accAfpslaiEmvObjct
+- added getMemberReport in accAfpslaiEmvObjct\MiddleServerApi

@@ -92,8 +92,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                     arl.api_name = Properties.Settings.Default.WiseCard_cardBindCifNo_Url.Substring(Properties.Settings.Default.WiseCard_cardBindCifNo_Url.LastIndexOf("/") + 1);
                     arl.request = objPayload.ToString();
 
-                    //if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
-                    if (Helpers.Utilities.wiseCardcardBindCifNo_Test(cbsCms, ref cmsResponse, ref msg))
+                    if (Helpers.Utilities.wiseCardcardBindCifNo(cbsCms, ref cmsResponse, ref msg))
+                    //if (Helpers.Utilities.wiseCardcardBindCifNo_Test(cbsCms, ref cmsResponse, ref msg))
                     {
                         Helpers.Utilities.SavePayloadWithResponse(reqPayload, Newtonsoft.Json.JsonConvert.SerializeObject(cmsResponse),2);
                         afpslai_emvEntities ent = new afpslai_emvEntities();
@@ -262,10 +262,11 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                     if (objPayload.cif != null) cif = objPayload.cif;
                     if (payloadAuth.branch != null) branch = payloadAuth.branch;
-                    
+
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
+
                     if (branchId == "000")
-                    {
-                        afpslai_emvEntities ent = new afpslai_emvEntities();
+                    {                        
                         var b = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
 
                         if (b != null) branchId = b.code;
@@ -311,9 +312,20 @@ namespace accAfpslaiEmvSrvc.Controllers
                             memberCBS.last_name = cdsResponse.PersonalInfo.LAST_NAME;
                             memberCBS.suffix = cdsResponse.PersonalInfo.SUFFIX_NAME;
                             memberCBS.gender = cdsResponse.PersonalInfo.SEX;
-                            memberCBS.civilStatus = Utilities.GetCBS_CivilStatus(cdsResponse.PersonalInfo.MARITAL_STATUS);
-                            memberCBS.membershipStatus = Utilities.GetCBS_ClientStatusCode(cdsResponse.PersonalInfo.CLIENT_STATUS_CODE);
-                            memberCBS.membershipType = Utilities.GetCBS_ClientType(cdsResponse.PersonalInfo.CLIENT_TYPE);
+
+                            //memberCBS.civilStatus = Utilities.GetCBS_CivilStatus(cdsResponse.PersonalInfo.MARITAL_STATUS);
+                            //memberCBS.membershipStatus = Utilities.GetCBS_ClientStatusCode(cdsResponse.PersonalInfo.CLIENT_STATUS_CODE);
+                            //memberCBS.membershipType = Utilities.GetCBS_ClientType(cdsResponse.PersonalInfo.CLIENT_TYPE);
+
+                            var civilStatusMapping = ent.civil_status.Where(o => o.cbsCode.Equals(cdsResponse.PersonalInfo.MARITAL_STATUS ?? string.Empty)).FirstOrDefault();
+                            var membershipStatusMapping = ent.membership_status.Where(o => o.cbsCode.Equals(cdsResponse.PersonalInfo.CLIENT_STATUS_CODE ?? string.Empty)).FirstOrDefault();
+                            var membershipTypeMapping = ent.membership_type.Where(o => o.cbsCode.Equals(cdsResponse.PersonalInfo.CLIENT_TYPE ?? string.Empty)).FirstOrDefault();
+                            var associateTypeMapping = ent.associate_type.Where(o => o.cbsCode.Equals(cdsResponse.PersonalInfo.CLIENT_SUB_TYPE ?? string.Empty)).FirstOrDefault();
+
+                            if (civilStatusMapping != null) memberCBS.civilStatus = civilStatusMapping.civilStatus ?? string.Empty;
+                            if (membershipStatusMapping != null) memberCBS.membershipStatus = membershipStatusMapping.membershipStatus ?? string.Empty;
+                            if (membershipTypeMapping != null) memberCBS.membershipType = membershipTypeMapping.membershipType ?? string.Empty;
+
                             memberCBS.membership_date = Convert.ToDateTime(cdsResponse.PersonalInfo.DATE_OPEN);
                             memberCBS.date_birth = Convert.ToDateTime(cdsResponse.PersonalInfo.BIRTH_CORP_DATE);
                             memberCBS.contact_nos = "";
@@ -324,7 +336,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             if (contactEmail != null) memberCBS.email = contactEmail.CONTACT_VALUE;
                             //else memberCBS.mobile_nos = "";
 
-                            var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("R"))).FirstOrDefault();
+                            //var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("R"))).FirstOrDefault();
+                            var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS==1)).FirstOrDefault();
                             if (addressCurrent != null)
                             {
                                 memberCBS.address1 = addressCurrent.ADDRESS1;
@@ -337,7 +350,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             }
                             else
                             {
-                                var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("P"))).FirstOrDefault();
+                                //var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("P"))).FirstOrDefault();
+                                var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS==0)).FirstOrDefault();
 
                                 if (addressPermanent != null)
                                 {
@@ -363,7 +377,8 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                             memberCBS.emergency_contact_name = "";
                             memberCBS.emergency_contact_nos = memberCBS.contact_nos;
-                            memberCBS.associateType = Utilities.GetCBS_AssociateTypeCode(cdsResponse.PersonalInfo.CLIENT_SUB_TYPE); ;
+                            //memberCBS.associateType = Utilities.GetCBS_AssociateTypeCode(cdsResponse.PersonalInfo.CLIENT_SUB_TYPE);
+                            if (associateTypeMapping != null) memberCBS.associateType = associateTypeMapping.associateType ?? string.Empty;
                             memberCBS.principal_cif = cdsResponse.PersonalInfo.ENDOSER_CIF_NO;
                             string principalMiddleName = cdsResponse.PersonalInfo.ENDOSER_MIDDLE_NAME;
                             if (principalMiddleName != "") principalMiddleName += " ";
@@ -610,15 +625,31 @@ namespace accAfpslaiEmvSrvc.Controllers
                     //              ReplacedCards = g.Count(x => x.print_type_id == 2 && (branchId == 0 || branchId == x.branch_id))
                     //          };
 
-                    var obj = from m in ent.members
-                              where m.is_cancel == false && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
-                              group m by m.date_post into g
-                              select new
-                              {
-                                  DatePost = g.Key,
-                                  NewCards = g.Count(x => x.print_type_id == 1),
-                                  ReplacedCards = g.Count(x => x.print_type_id == 2)
-                              };
+                    //var obj = from m in ent.members
+                    //          where m.is_cancel == false && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                    //          group m by m.date_post into g
+                    //          select new
+                    //          {
+                    //              DatePost = g.Key,
+                    //              NewCards = g.Count(x => x.print_type_id == 1),
+                    //              ReplacedCards = g.Count(x => x.print_type_id == 2)
+                    //          };
+
+                    //var obj = (from m in ent.members
+                    //           join c in ent.cards on m.id equals c.member_id into table1
+                    //           from c in table1.DefaultIfEmpty()
+                    //           where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && c.date_post != null && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                    //           group m by m.date_post into g
+
+                    var obj = (from m in ent.members                               
+                               where m.is_cancel == false && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                               group m by m.date_post into g
+                               select new
+                               {
+                                   DatePost = g.Key,
+                                   NewCards = g.Count(x => x.print_type_id == 1),
+                                   ReplacedCards = g.Count(x => x.print_type_id == 2)
+                               });
 
                     var newResults = (from r in obj.ToList()
                                       select new
@@ -627,7 +658,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                           NewCards = r.NewCards,
                                           ReplacedCards = r.ReplacedCards,
                                           Total = r.NewCards + r.ReplacedCards
-                                      }).Where(o => o.Total > 0).ToList();
+                                      }).Where(o => o.Total > 0).OrderBy(o => Convert.ToDateTime(o.CapturedDate)).ToList();
 
                     return apiResponse(new response { result = 0, obj = newResults });
                 }
@@ -681,17 +712,34 @@ namespace accAfpslaiEmvSrvc.Controllers
                     //              TornDamaged = g.Count(x => x.recard_reason_id == 2 && (branchId == 0 || branchId == x.branch_id)),
                     //              IncorrectDetails = g.Count(x => x.recard_reason_id == 3 && (branchId == 0 || branchId == x.branch_id))
                     //          };
+                    //var obj = from m in ent.members
 
-                    var obj = from m in ent.members
-                              where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
-                              group m by m.date_post into g
-                              select new
-                              {
-                                  DatePost = g.Key,
-                                  Lost = g.Count(x => x.recard_reason_id == 1),
-                                  TornDamaged = g.Count(x => x.recard_reason_id == 2),
-                                  IncorrectDetails = g.Count(x => x.recard_reason_id == 3)
-                              };
+                    //          where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                    //          group m by m.date_post into g
+                    //          select new
+                    //          {
+                    //              DatePost = g.Key,
+                    //              Lost = g.Count(x => x.recard_reason_id == 1),
+                    //              TornDamaged = g.Count(x => x.recard_reason_id == 2),
+                    //              IncorrectDetails = g.Count(x => x.recard_reason_id == 3)
+                    //          };
+
+                    //var obj = (from m in ent.members
+                    //           join c in ent.cards on m.id equals c.member_id into table1
+                    //           from c in table1.DefaultIfEmpty()
+                    //           where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && m.print_type_id == 2 && c.date_post != null && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                    //           group m by m.date_post into g
+
+                    var obj = (from m in ent.members                               
+                               where m.is_cancel == false && m.print_type_id == 2 && m.date_post >= startDate && m.date_post <= endDate && (branchId == 0 || branchId == m.branch_id)
+                               group m by m.date_post into g
+                               select new
+                               {
+                                   DatePost = g.Key,
+                                   Lost = g.Count(x => x.recard_reason_id == 1),
+                                   TornDamaged = g.Count(x => x.recard_reason_id == 2),
+                                   IncorrectDetails = g.Count(x => x.recard_reason_id == 3)
+                               });
 
                     var newResults = (from r in obj.ToList()
                                       select new
@@ -701,7 +749,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                           TornDamaged = r.TornDamaged,
                                           IncorrectDetails = r.IncorrectDetails,
                                           Total = r.Lost + r.TornDamaged + r.IncorrectDetails
-                                      }).Where(o => o.Total > 0).ToList();
+                                      }).Where(o => o.Total > 0).OrderBy(o => Convert.ToDateTime(o.CapturedDate)).ToList();
 
                     return apiResponse(new response { result = 0, obj = newResults });
                 }
@@ -877,7 +925,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                             var users = from u in ent.system_user
                                         join r in ent.system_role on u.role_id equals r.id into table1
                                         from r in table1.ToList()
-                                        where u.id == userId
+                                        where u.id == userId                                       
                                         select new
                                         {
                                             id = u.id,
@@ -902,6 +950,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                         var users = from u in ent.system_user
                                     join r in ent.system_role on u.role_id equals r.id into table1
                                     from r in table1.ToList()
+                                    orderby u.id
                                     select new
                                     {
                                         userId = u.id,
@@ -919,6 +968,83 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     };
 
                         return apiResponse(new response { result = 0, obj = users });
+                    }
+                }
+
+                return apiResponse(validationResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/getSystemLog")]
+        [HttpPost]
+        public IHttpActionResult GetSystemLog(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = ValidateRequest(reqPayload);
+
+                if (validationResponse.result == 0)
+                {
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
+                    string userName = "";
+                    string system = "";
+
+                    if (payload != "")
+                    {
+                        dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                        if (objPayload.userName != null) userName = objPayload.userName;
+                        if (objPayload.system != null) system = objPayload.system;
+
+                        if (string.IsNullOrEmpty(objPayload.userName) && string.IsNullOrEmpty(objPayload.system)) return apiResponse(new responseFailedBadRequest { message = "Missing required field(s)" });
+                        else
+                        {
+                            var logs = from l in ent.system_log
+                                       join u in ent.system_user on l.user_id equals u.id into table1
+                                       from u in table1.ToList()
+                                       where (u.user_name.Equals(userName) || l.system.Equals(system))
+                                       orderby l.id
+                                       select new
+                                       {
+                                           id = l.id,
+                                           user_id = l.user_id,
+                                           user_name = u.user_name,
+                                           system = l.system,
+                                           log_desc = l.log_desc,
+                                           log_type = l.log_type,
+                                           date_post = l.date_post,
+                                           time_post = l.time_post
+                                       };
+
+                            return apiResponse(new response { result = 0, obj = logs });
+                        }
+                    }
+                    else
+                    {
+                        var logs = from l in ent.system_log
+                                   join u in ent.system_user on l.user_id equals u.id into table1
+                                   from u in table1.ToList()
+                                   orderby l.id
+                                   select new
+                                   {
+                                       id = l.id,
+                                       user_id = l.user_id,
+                                       user_name = u.user_name,
+                                       system = l.system,
+                                       log_desc = l.log_desc,
+                                       log_type = l.log_type,
+                                       date_post = l.date_post,
+                                       time_post = l.time_post
+                                   };
+
+                        return apiResponse(new response { result = 0, obj = logs });
                     }
                 }
 
@@ -1167,7 +1293,141 @@ namespace accAfpslaiEmvSrvc.Controllers
                                        dateCBS = c == null ? null : c.date_CBS,
                                        cDatePost = c == null ? null : c.date_post
                                    })
-                                   .ToList();
+                                   .OrderBy(o => o.memberId).ToList();
+
+                    return apiResponse(new response { result = 0, obj = members });
+                }
+
+                return apiResponse(validationResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/getMemberReport")]
+        [HttpPost]
+        public IHttpActionResult GetMemberReport(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = ValidateRequest(reqPayload);
+
+                if (validationResponse.result == 0)
+                {
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                    dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+
+                    DateTime? startDate = Helpers.Utilities.DbDataStartDate();
+                    DateTime? endDate = Helpers.Utilities.DbDataEndDate();
+
+                    string cif = "";
+                    int memberId = 0;
+                    string branch = "";
+                    int printTypeId = 0;
+                    int recardReasonId = 0;
+
+                    if (objPayload.cif != null) cif = objPayload.cif;
+                    if (objPayload.memberId != null) memberId = objPayload.memberId;
+                    if (objPayload.branch != null) branch = objPayload.branch;
+                    if (objPayload.printTypeId != null) printTypeId = objPayload.printTypeId;
+                    if (objPayload.recardReasonId != null) recardReasonId = objPayload.recardReasonId;
+
+                    if (objPayload.startDate != null) startDate = objPayload.startDate;
+                    if (objPayload.endDate != null) endDate = objPayload.endDate;
+
+                    var branchEnt = ent.branches.Where(o => o.branchName.Equals(branch)).FirstOrDefault();
+                    int branchId = 0;
+                    if (branchEnt != null) branchId = branchEnt.id;
+
+                    var members = (from m in ent.members
+                                   join c in ent.cards on m.id equals c.member_id into table1
+                                   from c in table1.DefaultIfEmpty()
+                                   join b in ent.branches on m.branch_id equals b.id into table2
+                                   from b in table2.DefaultIfEmpty()
+                                   join a in ent.addresses on m.id equals a.member_id into table3
+                                   from a in table3.DefaultIfEmpty()
+                                   join cv in ent.civil_status on m.civil_status_id equals cv.id into table4
+                                   from cv in table4.DefaultIfEmpty()
+                                   join mt in ent.membership_type on m.membership_type_id equals mt.id into table5
+                                   from mt in table5.DefaultIfEmpty()
+                                   join ms in ent.membership_status on m.membership_status_id equals ms.id into table6
+                                   from ms in table6.DefaultIfEmpty()
+                                   join at in ent.associate_type on m.principal_associate_type_id equals at.id into table7
+                                   from at in table7.DefaultIfEmpty()
+                                   join u in ent.system_user on m.user_id equals u.id into table8
+                                   from u in table8.DefaultIfEmpty()
+                                   join pt in ent.print_type on m.print_type_id equals pt.id into table9
+                                   from pt in table9.DefaultIfEmpty()
+                                   join rr in ent.recard_reason on m.recard_reason_id equals rr.id into table10
+                                   from rr in table10.DefaultIfEmpty()
+                                   join cntry in ent.countries on a.country_id equals cntry.id into table11
+                                   from cntry in table11.DefaultIfEmpty()
+                                   where m.is_cancel == false && (c.is_cancel == false || c.is_cancel == null) && c.date_post != null && m.date_post >= startDate && m.date_post <= endDate &&
+                                   (branchId == 0 || branchId == m.branch_id) &&
+                                   (memberId == 0 || memberId == m.id) &&
+                                   (cif == "" || cif == m.cif) &&
+                                   (printTypeId == 0 || printTypeId == m.print_type_id) &&
+                                   (recardReasonId == 0 || recardReasonId == m.recard_reason_id)
+                                   select new
+                                   {
+                                       memberId = m.id,
+                                       cif = m.cif,
+                                       lastName = m.last_name,
+                                       firstName = m.first_name,
+                                       middleName = m.middle_name,
+                                       suffix = m.suffix,
+                                       gender = m.gender,
+                                       birthDate = m.date_birth,
+                                       civilStatusId = m.civil_status_id,
+                                       civilStatus = cv.civilStatus,
+                                       membershipTypeId = m.membership_type_id,
+                                       membershipType = (string.IsNullOrEmpty(mt.membershipType) ? "" : mt.membershipType.Replace("Corporate Regular","Regular")),
+                                       membershipStatusId = m.membership_status_id,
+                                       membershipStatus = ms.membershipStatus,
+                                       membershipDate = m.membership_date,
+                                       contactNos = m.contact_nos,
+                                       mobileNos = m.mobile_nos,
+                                       emergencyContactName = m.emergency_contact_name,
+                                       emergencyContactNos = m.emergency_contact_nos,
+                                       principalAssociateTypeId = m.principal_associate_type_id,
+                                       principalAssociateType = at.associateType,
+                                       principalCif = m.principal_cif,
+                                       principalName = m.principal_name,
+                                       ccaNo = m.cca_no,
+                                       userId = m.user_id,
+                                       userName = u.user_name,
+                                       terminalId = m.terminal_id,
+                                       branchId = m.branch_id,
+                                       branch = b.branchName,
+                                       onlineReferenceNumber = m.online_reference_number,
+                                       cardName = m.card_name,
+                                       email = m.email,
+                                       printTypeId = m.print_type_id,
+                                       printType = pt.printType,
+                                       recardReasonId = m.recard_reason_id,
+                                       recardReason = rr.recardReason,
+                                       mDatePost = m.date_post,
+                                       isCancel = m.is_cancel,
+                                       address1 = a.address1,
+                                       address2 = a.address2,
+                                       address3 = a.address3,
+                                       city = a.city,
+                                       province = a.province,
+                                       countryId = a.country_id,
+                                       country = cntry.countryName,
+                                       zipCode = a.zipcode,
+                                       cardNo = c == null ? string.Empty : c.cardNo,
+                                       dateCMS = c == null ? null : c.date_CMS,
+                                       dateCBS = c == null ? null : c.date_CBS,
+                                       cDatePost = c == null ? null : c.date_post
+                                   })
+                                   .OrderBy(o => o.memberId).ToList();
 
                     return apiResponse(new response { result = 0, obj = members });
                 }
@@ -1562,24 +1822,52 @@ namespace accAfpslaiEmvSrvc.Controllers
                 dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(reqPayload.payload);
                 var user = Newtonsoft.Json.JsonConvert.DeserializeObject<loginRequest>(objPayload.ToString());
 
+                string userName = user.user_name;
+                var objUsername = ent.system_user.Where(o => o.user_name.Equals(userName) && o.is_deleted == false).FirstOrDefault();
+
                 if (user == null) return apiResponse(new responseFailedBadRequest { message = "User is empty" });
                 else if (string.IsNullOrEmpty(user.user_name) || string.IsNullOrEmpty(user.user_pass)) return apiResponse(new responseFailedBadRequest { message = "Invalid credential" });
                 else
                 {
                     try
-                    {
-                        string userName = user.user_name;
-                        var objUsername = ent.system_user.Where(o => o.user_name.Equals(userName)).FirstOrDefault();
+                    {                        
+                        var userLogOnHistory = ent.userlogons.Where(o => o.user_name.Equals(userName) && o.system.Equals(reqPayload.system) && o.logout_date==null).FirstOrDefault();
                         if (objUsername == null) return apiResponse(new responseFailedBadRequest { message = "User does not exist" });
                         else if (objUsername.status == "Not active") return apiResponse(new responseFailedBadRequest { message = "User does not exist" });
                         else if (objUsername.status == "Hold") return apiResponse(new responseFailedBadRequest { message = "User account status is on hold" });
+                        //else if (userLogOnHistory != null)
+                        //{
+                        //    DateTime start = new DateTime(userLogOnHistory.login_date.Value.Year, userLogOnHistory.login_date.Value.Month, userLogOnHistory.login_date.Value.Day, userLogOnHistory.login_time.Value.Hours, userLogOnHistory.login_time.Value.Minutes, userLogOnHistory.login_time.Value.Seconds);
+                        //    DateTime end = DateTime.Now;
+                        //    double totalminutes = (end - start).TotalMinutes;
+
+                        //    int minuteLimit = 60 * 9;
+                        //    if (totalminutes <= minuteLimit) return apiResponse(new responseFailedBadRequest { message = "User is already logged in " + reqPayload.system.ToUpper() });
+                        //    else
+                        //    {
+                        //        Helpers.Utilities.UserLogOut(userLogOnHistory.id);
+                        //        Helpers.Utilities.SaveSystemLog(reqPayload.system, objUsername.id, string.Format("{0} forced log out by {1} minute(s) limit", userName, minuteLimit.ToString()));
+                        //    }
+
+                        //    return apiResponse(new responseFailedBadRequest { message = "User is already logged in " + reqPayload.system.ToUpper() });
+                        //}
                         else
                         {
-                            var dss = ent.dcs_system_setting;
+                            //var dss = ent.dcs_system_setting;
                             //bool isChangePassword = (dss.FirstOrDefault().system_default_password == user.user_pass);
+
+                            //force logout if user is logged in
+                            if (userLogOnHistory != null)
+                            {
+                                Helpers.Utilities.UserLogOut(userLogOnHistory.id);
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, objUsername.id, string.Format("{0} was forced log out", userName));
+                            }
 
                             if (user.user_pass == accAfpslaiEmvEncDec.Aes256CbcEncrypter.Decrypt(objUsername.user_pass))
                             {
+                                objUsername.login_attmpt_ctr = 0;
+                                ent.SaveChanges();
+
                                 var systemUser = ent.system_user
                                   .Join(
                                       ent.system_role,
@@ -1601,10 +1889,21 @@ namespace accAfpslaiEmvSrvc.Controllers
 
                                 Helpers.Utilities.SaveSystemLog(reqPayload.system, systemUser[0].userId, string.Format("{0} log in ", userName));
 
+                                var userlogon = new userlogon();
+                                userlogon.system = reqPayload.system;
+                                userlogon.user_name = userName;
+                                Helpers.Utilities.UserLogIn(userlogon);
+
                                 return apiResponse(new response { result = 0, obj = systemUser });
                             }
                             else
                             {
+                                short login_attmpt_ctr = (short)(objUsername.login_attmpt_ctr + 1);
+                                objUsername.login_attmpt_ctr = login_attmpt_ctr;
+                                ent.SaveChanges();
+
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, objUsername.id, string.Format("{0} failed login attempt - {1}", userName, login_attmpt_ctr.ToString()));
+
                                 return apiResponse(new responseFailedBadRequest { message = "Invalid credential" });
                             }
 
@@ -1663,9 +1962,11 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             var dss = ent.dcs_system_setting;
                             var objUsername = ent.system_user.Where(o => o.user_name.Equals(user_name));
-                            var objFirstAndLast = ent.system_user.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix));
+                            //remove name validation per afpslai comment ATM-DCS047
+                            //var objFirstAndLast = ent.system_user.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix));
                             if (objUsername.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
-                            else if (objFirstAndLast.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
+                            //remove name validation per afpslai comment ATM-DCS047
+                            //else if (objFirstAndLast.Count() > 0) return apiResponse(new responseFailedDuplicateRecord());
                             else
                             {
                                 if (string.IsNullOrEmpty(user.middle_name)) user.middle_name = "";
@@ -1676,6 +1977,7 @@ namespace accAfpslaiEmvSrvc.Controllers
                                 user.time_post = DateTime.Now.TimeOfDay;
                                 user.is_default_pass = true;
                                 user.is_deleted = false;
+                                user.login_attmpt_ctr = 0;
                                 ent.system_user.Add(user);
                                 ent.SaveChanges();
 
@@ -1687,9 +1989,11 @@ namespace accAfpslaiEmvSrvc.Controllers
                         else
                         {
                             var objUsername = ent.system_user.Where(o => o.user_name.Equals(user_name) && o.id != userId).FirstOrDefault();
-                            var objFirstAndLast = ent.system_user.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix) && o.id != userId).FirstOrDefault();
+                            //remove name validation per afpslai comment ATM-DCS047
+                            //var objFirstAndLast = ent.system_user.Where(o => o.first_name.Equals(first_name) && o.middle_name.Equals(middle_name) && o.last_name.Equals(last_name) && o.suffix.Equals(suffix) && o.id != userId).FirstOrDefault();
                             if (objUsername != null) return apiResponse(new responseFailedDuplicateRecord());
-                            else if (objFirstAndLast != null) return apiResponse(new responseFailedDuplicateRecord());
+                            //remove name validation per afpslai comment ATM-DCS047
+                            //else if (objFirstAndLast != null) return apiResponse(new responseFailedDuplicateRecord());
                             else
                             {
                                 var obj = ent.system_user.Where(o => o.id == userId).FirstOrDefault();
@@ -1701,20 +2005,25 @@ namespace accAfpslaiEmvSrvc.Controllers
                                     if (obj.first_name != user.first_name) sb.Append(". Firstname changed");
                                     if (obj.last_name != user.last_name) sb.Append(". Lastname changed");
                                     if (obj.status != user.status) sb.Append(". Status changed");
+                                    if (obj.role_id != user.role_id) sb.Append(". Role changed");
                                     if (string.IsNullOrEmpty(user.middle_name)) if (obj.middle_name != user.middle_name) sb.Append(". Middlename changed");
                                     if (string.IsNullOrEmpty(user.suffix)) if (obj.suffix != user.suffix) sb.Append(". Suffix changed");
-                                    if (sb.ToString() != "") sb.Append(".");
+                                    if (obj.is_deleted != user.is_deleted) sb.Append(". is_deleted changed");
 
-                                    obj.user_name = user.user_name;
-                                    obj.first_name = user.first_name;
-                                    obj.last_name = user.last_name;
-                                    if (string.IsNullOrEmpty(user.middle_name)) obj.middle_name = "";
-                                    if (string.IsNullOrEmpty(user.suffix)) obj.suffix = "";
-                                    obj.status = user.status;
-                                    obj.role_id = user.role_id;
-                                    ent.SaveChanges();
+                                    if (sb.ToString() != "")
+                                    {
+                                        sb.Append(".");
+                                        obj.user_name = user.user_name;
+                                        obj.first_name = user.first_name;
+                                        obj.last_name = user.last_name;
+                                        if (string.IsNullOrEmpty(user.middle_name)) obj.middle_name = "";
+                                        if (string.IsNullOrEmpty(user.suffix)) obj.suffix = "";
+                                        obj.status = user.status;
+                                        obj.role_id = user.role_id;
+                                        ent.SaveChanges();
 
-                                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", user.user_name, sb.ToString()));
+                                        Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", user.user_name, sb.ToString()));
+                                    }                                     
 
                                     return apiResponse(new responseSuccessUpdateRecord());
                                 }
@@ -1772,6 +2081,37 @@ namespace accAfpslaiEmvSrvc.Controllers
                             return apiResponse(new responseSuccess { message = "User password has been reset" });
                         }
                     }
+                }
+
+                return apiResponse(validationResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/saveSystemLog")]
+        [HttpPost]
+        public IHttpActionResult SaveSystemLog(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = ValidateRequest(reqPayload);
+
+                if (validationResponse.result == 0)
+                {
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
+
+                    dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                    var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<system_log>(objPayload.ToString());                    
+
+                    Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, obj.log_desc);
+
+                    return apiResponse(new responseSuccess { message = "Saved log" });
                 }
 
                 return apiResponse(validationResponse);
@@ -2469,6 +2809,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             obj.is_deleted = true;
                             ent.SaveChanges();
 
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.role));
+
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
                         else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
@@ -2509,7 +2851,10 @@ namespace accAfpslaiEmvSrvc.Controllers
                         if (obj != null)
                         {
                             obj.is_deleted = true;
+                            obj.status = "Not active";                          
                             ent.SaveChanges();
+
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.user_name));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -2616,8 +2961,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             obj.is_deleted = true;
                             ent.SaveChanges();
-
-                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.associateType));
+                          
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.associateType));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -2724,8 +3069,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             obj.is_deleted = true;
                             ent.SaveChanges();
-
-                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.branchName));
+                                                        
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.branchName));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -2831,8 +3176,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             obj.is_deleted = true;
                             ent.SaveChanges();
-
-                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is changed to is_deleted=true", obj.civilStatus));
+                            
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.civilStatus));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -3009,20 +3354,25 @@ namespace accAfpslaiEmvSrvc.Controllers
                             if (obj.font_size != cce.font_size) sb.Append(". font size changed");
                             if (obj.font_style != cce.font_style) sb.Append(". font stype changed");
                             if (obj.element_type != cce.element_type) sb.Append(". element type changed");
-                            if (sb.ToString() != "") sb.Append(".");
 
-                            obj.x = cce.x;
-                            obj.y = cce.y;
-                            obj.width = cce.width;
-                            obj.height = cce.height;
-                            if (!string.IsNullOrEmpty(cce.font_name)) obj.font_name = cce.font_name;
-                            if (cce.font_size != null) obj.font_size = cce.font_size;
-                            if (cce.font_style != null) obj.font_style = cce.font_style;
-                            obj.element_type = cce.element_type;
-                            obj.last_updated = DateTime.Now;
-                            ent.SaveChanges();
+                            if (sb.ToString() != "")
+                            {
+                                sb.Append(".");
+                                obj.x = cce.x;
+                                obj.y = cce.y;
+                                obj.width = cce.width;
+                                obj.height = cce.height;
+                                if (!string.IsNullOrEmpty(cce.font_name)) obj.font_name = cce.font_name;
+                                if (cce.font_size != null) obj.font_size = cce.font_size;
+                                if (cce.font_style != null) obj.font_style = cce.font_style;
+                                obj.element_type = cce.element_type;
+                                obj.last_updated = DateTime.Now;
+                                ent.SaveChanges();
 
-                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", cce.element, sb.ToString()));
+                                Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} details were modified{1}", cce.element, sb.ToString()));
+                            }
+
+                            
 
                             return apiResponse(new responseSuccessUpdateRecord());
                         }
@@ -3064,6 +3414,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             obj.is_deleted = true;
                             ent.SaveChanges();
+
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.membershipStatus));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -3170,6 +3522,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                             obj.is_deleted = true;
                             ent.SaveChanges();
 
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.membershipType));
+
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
                         else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
@@ -3274,6 +3628,8 @@ namespace accAfpslaiEmvSrvc.Controllers
                         {
                             obj.is_deleted = true;
                             ent.SaveChanges();
+
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.printType));
 
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
@@ -3380,10 +3736,48 @@ namespace accAfpslaiEmvSrvc.Controllers
                             obj.is_deleted = true;
                             ent.SaveChanges();
 
+                            Helpers.Utilities.SaveSystemLog(reqPayload.system, authUserId, string.Format("{0} is deleted", obj.recardReason));
+
                             return apiResponse(new responseSuccessDeleteRecord());
                         }
                         else return apiResponse(new responseFailedUpdateRecord { message = "No record changed" });
                     }
+                }
+
+                return apiResponse(validationResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return apiResponse(new responseFailedSystemError { message = ex.Message });
+            }
+        }
+
+        [Route("~/api/userLogout")]
+        [HttpPost]
+        public IHttpActionResult UserLogout(requestPayload reqPayload)
+        {
+            try
+            {
+                string payload = reqPayload.payload;
+
+                var validationResponse = ValidateRequest(reqPayload);
+
+                if (validationResponse.result == 0)
+                {                                     
+                    afpslai_emvEntities ent = new afpslai_emvEntities();
+                    dynamic objPayload = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+                    var user = Newtonsoft.Json.JsonConvert.DeserializeObject<loginRequest>(objPayload.ToString());
+                    int userId = objPayload.id;
+                    string userName = user.user_name;
+                    var userLogOnHistory = ent.userlogons.Where(o => o.user_name.Equals(userName) && o.system.Equals(reqPayload.system) && o.logout_date == null).FirstOrDefault();
+                    if (userLogOnHistory != null)
+                    {
+                        Helpers.Utilities.UserLogOut(userLogOnHistory.id);
+                        Helpers.Utilities.SaveSystemLog(reqPayload.system, userId, string.Format("{0} log out ", userName));
+                    }
+
+                    return apiResponse(new responseSuccessUpdateRecord());                 
                 }
 
                 return apiResponse(validationResponse);

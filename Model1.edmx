@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="afpslai_emvModel.Store" Provider="Npgsql" ProviderManifestToken="13.3" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="address">
           <Key>
             <PropertyRef Name="id" />
@@ -44,6 +44,7 @@
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="associateType" Type="varchar" MaxLength="20" />
           <Property Name="is_deleted" Type="bool" />
+          <Property Name="cbsCode" Type="varchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="branch">
           <Key>
@@ -74,6 +75,7 @@
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="civilStatus" Type="varchar" MaxLength="20" />
           <Property Name="is_deleted" Type="bool" />
+          <Property Name="cbsCode" Type="varchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="country">
           <Key>
@@ -157,6 +159,7 @@
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="membershipStatus" Type="varchar" MaxLength="20" />
           <Property Name="is_deleted" Type="bool" />
+          <Property Name="cbsCode" Type="varchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="membership_type">
           <Key>
@@ -165,6 +168,7 @@
           <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="membershipType" Type="varchar" MaxLength="20" />
           <Property Name="is_deleted" Type="bool" />
+          <Property Name="cbsCode" Type="varchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="online_registration">
           <Key>
@@ -240,10 +244,23 @@
           <Property Name="suffix" Type="varchar" MaxLength="10" />
           <Property Name="role_id" Type="int4" />
           <Property Name="status" Type="varchar" MaxLength="20" />
-          <Property Name="is_default_pass" Type="bool" />
           <Property Name="is_deleted" Type="bool" />
           <Property Name="date_post" Type="date" />
           <Property Name="time_post" Type="time" Precision="6" />
+          <Property Name="is_default_pass" Type="bool" />
+          <Property Name="login_attmpt_ctr" Type="int2" />
+        </EntityType>
+        <EntityType Name="userlogon">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_name" Type="varchar" MaxLength="50" />
+          <Property Name="login_date" Type="date" />
+          <Property Name="login_time" Type="time" Precision="6" />
+          <Property Name="logout_date" Type="date" />
+          <Property Name="logout_time" Type="time" Precision="6" />
+          <Property Name="system" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityContainer Name="afpslai_emvModelStoreContainer">
           <EntitySet Name="address" EntityType="Self.address" Schema="afpslai_emv" store:Type="Tables" />
@@ -264,9 +281,9 @@
           <EntitySet Name="system_log" EntityType="Self.system_log" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
           <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
+          <EntitySet Name="userlogon" EntityType="Self.userlogon" Schema="afpslai_emv" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="afpslai_emvModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -309,6 +326,7 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="associateType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="is_deleted" Type="Boolean" />
+          <Property Name="cbsCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="branch">
           <Key>
@@ -339,6 +357,7 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="civilStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="is_deleted" Type="Boolean" />
+          <Property Name="cbsCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="country">
           <Key>
@@ -422,6 +441,7 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="membershipStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="is_deleted" Type="Boolean" />
+          <Property Name="cbsCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="membership_type">
           <Key>
@@ -430,6 +450,7 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="membershipType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="is_deleted" Type="Boolean" />
+          <Property Name="cbsCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="online_registration">
           <Key>
@@ -509,6 +530,7 @@
           <Property Name="is_deleted" Type="Boolean" />
           <Property Name="date_post" Type="DateTime" Precision="0" />
           <Property Name="time_post" Type="Time" Precision="6" />
+          <Property Name="login_attmpt_ctr" Type="Int16" />
         </EntityType>
         <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="addresses" EntityType="Self.address" />
@@ -529,7 +551,20 @@
           <EntitySet Name="system_log" EntityType="Self.system_log" />
           <EntitySet Name="system_role" EntityType="Self.system_role" />
           <EntitySet Name="system_user" EntityType="Self.system_user" />
+          <EntitySet Name="userlogons" EntityType="afpslai_emvModel.userlogon" />
         </EntityContainer>
+        <EntityType Name="userlogon">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="login_date" Type="DateTime" Precision="0" />
+          <Property Name="login_time" Type="Time" Precision="6" />
+          <Property Name="logout_date" Type="DateTime" Precision="0" />
+          <Property Name="logout_time" Type="Time" Precision="6" />
+          <Property Name="system" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -573,6 +608,7 @@
           <EntitySetMapping Name="associate_type">
             <EntityTypeMapping TypeName="afpslai_emvModel.associate_type">
               <MappingFragment StoreEntitySet="associate_type">
+                <ScalarProperty Name="cbsCode" ColumnName="cbsCode" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="associateType" ColumnName="associateType" />
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
@@ -606,6 +642,7 @@
           <EntitySetMapping Name="civil_status">
             <EntityTypeMapping TypeName="afpslai_emvModel.civil_status">
               <MappingFragment StoreEntitySet="civil_status">
+                <ScalarProperty Name="cbsCode" ColumnName="cbsCode" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="civilStatus" ColumnName="civilStatus" />
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
@@ -694,6 +731,7 @@
           <EntitySetMapping Name="membership_status">
             <EntityTypeMapping TypeName="afpslai_emvModel.membership_status">
               <MappingFragment StoreEntitySet="membership_status">
+                <ScalarProperty Name="cbsCode" ColumnName="cbsCode" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="membershipStatus" ColumnName="membershipStatus" />
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
@@ -703,6 +741,7 @@
           <EntitySetMapping Name="membership_type">
             <EntityTypeMapping TypeName="afpslai_emvModel.membership_type">
               <MappingFragment StoreEntitySet="membership_type">
+                <ScalarProperty Name="cbsCode" ColumnName="cbsCode" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="membershipType" ColumnName="membershipType" />
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
@@ -778,6 +817,7 @@
           <EntitySetMapping Name="system_user">
             <EntityTypeMapping TypeName="afpslai_emvModel.system_user">
               <MappingFragment StoreEntitySet="system_user">
+                <ScalarProperty Name="login_attmpt_ctr" ColumnName="login_attmpt_ctr" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_name" ColumnName="user_name" />
                 <ScalarProperty Name="user_pass" ColumnName="user_pass" />
@@ -791,6 +831,19 @@
                 <ScalarProperty Name="is_deleted" ColumnName="is_deleted" />
                 <ScalarProperty Name="date_post" ColumnName="date_post" />
                 <ScalarProperty Name="time_post" ColumnName="time_post" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="userlogons">
+            <EntityTypeMapping TypeName="afpslai_emvModel.userlogon">
+              <MappingFragment StoreEntitySet="userlogon">
+                <ScalarProperty Name="system" ColumnName="system" />
+                <ScalarProperty Name="logout_time" ColumnName="logout_time" />
+                <ScalarProperty Name="logout_date" ColumnName="logout_date" />
+                <ScalarProperty Name="login_time" ColumnName="login_time" />
+                <ScalarProperty Name="login_date" ColumnName="login_date" />
+                <ScalarProperty Name="user_name" ColumnName="user_name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

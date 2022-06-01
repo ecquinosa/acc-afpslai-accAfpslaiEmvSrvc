@@ -17,5 +17,6 @@ namespace accAfpslaiEmvSrvc
         public int id { get; set; }
         public string associateType { get; set; }
         public Nullable<bool> is_deleted { get; set; }
+        public string cbsCode { get; set; }
     }
 }

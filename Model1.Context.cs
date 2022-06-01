@@ -43,5 +43,6 @@ namespace accAfpslaiEmvSrvc
         public virtual DbSet<system_log> system_log { get; set; }
         public virtual DbSet<system_role> system_role { get; set; }
         public virtual DbSet<system_user> system_user { get; set; }
+        public virtual DbSet<userlogon> userlogons { get; set; }
     }
 }

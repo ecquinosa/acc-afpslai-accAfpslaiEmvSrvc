@@ -39,6 +39,7 @@
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="associateType" Type="varchar" MaxLength="20" />
     <Property Name="is_deleted" Type="bool" />
+    <Property Name="cbsCode" Type="varchar" MaxLength="6" />
   </EntityType>
   <EntityType Name="branch">
     <Key>
@@ -69,6 +70,7 @@
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="civilStatus" Type="varchar" MaxLength="20" />
     <Property Name="is_deleted" Type="bool" />
+    <Property Name="cbsCode" Type="varchar" MaxLength="6" />
   </EntityType>
   <EntityType Name="country">
     <Key>
@@ -152,6 +154,7 @@
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="membershipStatus" Type="varchar" MaxLength="20" />
     <Property Name="is_deleted" Type="bool" />
+    <Property Name="cbsCode" Type="varchar" MaxLength="6" />
   </EntityType>
   <EntityType Name="membership_type">
     <Key>
@@ -160,6 +163,7 @@
     <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="membershipType" Type="varchar" MaxLength="20" />
     <Property Name="is_deleted" Type="bool" />
+    <Property Name="cbsCode" Type="varchar" MaxLength="6" />
   </EntityType>
   <EntityType Name="online_registration">
     <Key>
@@ -235,10 +239,23 @@
     <Property Name="suffix" Type="varchar" MaxLength="10" />
     <Property Name="role_id" Type="int4" />
     <Property Name="status" Type="varchar" MaxLength="20" />
-    <Property Name="is_default_pass" Type="bool" />
     <Property Name="is_deleted" Type="bool" />
     <Property Name="date_post" Type="date" />
     <Property Name="time_post" Type="time" Precision="6" />
+    <Property Name="is_default_pass" Type="bool" />
+    <Property Name="login_attmpt_ctr" Type="int2" />
+  </EntityType>
+  <EntityType Name="userlogon">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="user_name" Type="varchar" MaxLength="50" />
+    <Property Name="login_date" Type="date" />
+    <Property Name="login_time" Type="time" Precision="6" />
+    <Property Name="logout_date" Type="date" />
+    <Property Name="logout_time" Type="time" Precision="6" />
+    <Property Name="system" Type="varchar" MaxLength="10" />
   </EntityType>
   <EntityContainer Name="afpslai_emvModelStoreContainer">
     <EntitySet Name="address" EntityType="Self.address" Schema="afpslai_emv" store:Type="Tables" />
@@ -259,5 +276,6 @@
     <EntitySet Name="system_log" EntityType="Self.system_log" Schema="afpslai_emv" store:Type="Tables" />
     <EntitySet Name="system_role" EntityType="Self.system_role" Schema="afpslai_emv" store:Type="Tables" />
     <EntitySet Name="system_user" EntityType="Self.system_user" Schema="afpslai_emv" store:Type="Tables" />
+    <EntitySet Name="userlogon" EntityType="Self.userlogon" Schema="afpslai_emv" store:Type="Tables" />
   </EntityContainer>
 </Schema>

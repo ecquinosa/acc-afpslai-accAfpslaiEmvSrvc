@@ -66,6 +66,24 @@ namespace accAfpslaiEmvSrvc.Helpers
             ent.SaveChanges();
         }
 
+        public static void UserLogIn(userlogon ul)
+        {
+            afpslai_emvEntities ent = new afpslai_emvEntities();            
+            ul.login_date = DateTime.Now.Date;
+            ul.login_time = DateTime.Now.TimeOfDay;
+            ent.userlogons.Add(ul);
+            ent.SaveChanges();
+        }
+
+        public static void UserLogOut(int id)
+        {
+            afpslai_emvEntities ent = new afpslai_emvEntities();
+            var obj = ent.userlogons.Where(o => o.id == id).FirstOrDefault();
+            obj.logout_date = DateTime.Now.Date;
+            obj.logout_time = DateTime.Now.TimeOfDay;           
+            ent.SaveChanges();
+        }
+
         public static void AddSysLog(system_log system_log)
         {
             afpslai_emvEntities ent = new afpslai_emvEntities();
@@ -329,7 +347,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             catch (Exception ex)
             {
                 if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach cms api.";
-                else err = ex.Message;
+                else err = string.Concat("CMS api error. ", ex.Message);
                 return false;
             }
             finally
@@ -381,7 +399,7 @@ namespace accAfpslaiEmvSrvc.Helpers
             catch (Exception ex)
             {
                 if (ex.Message.Equals("One or more errors occurred.")) err = "Unable to reach cbs api.";
-                else err = ex.Message;
+                else err = string.Concat("CBS api error. ", ex.Message);
                 return false;
             }
             finally
