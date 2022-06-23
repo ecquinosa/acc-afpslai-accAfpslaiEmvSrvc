@@ -16,3 +16,12 @@ D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\acc
 D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CopyComplete
 D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.dll
 D:\WORK\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.pdb
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.dll
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\accAfpslaiEmvEncDec.pdb
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.dll
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\bin\Debug\Newtonsoft.Json.xml
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.AssemblyReference.cache
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CoreCompileInputs.cache
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.csproj.CopyComplete
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.dll
+C:\EDEL\Projects\acc-afpslai-accAfpslaiEmvSrvc\accAfpslaiEmvEncDec\obj\Debug\accAfpslaiEmvEncDec.pdb

@@ -229,6 +229,15 @@ namespace accAfpslaiEmvSrvc.Controllers
         //    }
         //}
 
+        [Route("~/api/version")]
+        [HttpGet]
+        //public IHttpActionResult PullCBSDatav2(cbsRequest payload)
+        public IHttpActionResult Version()
+        {
+            return apiResponse(new response { result = 0, obj = string.Format("Product: v{0}", GetType().Assembly.GetName().Version.ToString()) });            
+        }
+
+
         //[Route("~/api/pullCBSDatav2")]
         [Route("~/api/pullCBSData")]
         [HttpPost]
@@ -330,50 +339,63 @@ namespace accAfpslaiEmvSrvc.Controllers
                             memberCBS.date_birth = Convert.ToDateTime(cdsResponse.PersonalInfo.BIRTH_CORP_DATE);
                             memberCBS.contact_nos = "";
 
-                            var contactMobileNo = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("M"))).FirstOrDefault();
-                            var contactEmail = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("E"))).FirstOrDefault();
-                            if (contactMobileNo != null) memberCBS.mobile_nos = contactMobileNo.MOBILE_CTY_CODE + contactMobileNo.MOBILE_PREFIX + contactMobileNo.MOBILE_NUMBER;
-                            if (contactEmail != null) memberCBS.email = contactEmail.CONTACT_VALUE;
-                            //else memberCBS.mobile_nos = "";
-
-                            //var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("R"))).FirstOrDefault();
-                            var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS==1)).FirstOrDefault();
-                            if (addressCurrent != null)
+                            try
                             {
-                                memberCBS.address1 = addressCurrent.ADDRESS1;
-                                memberCBS.address2 = addressCurrent.ADDRESS2;
-                                memberCBS.address3 = addressCurrent.ADDRESS3 + " " + addressCurrent.ADDRESS4;
-                                memberCBS.city = addressCurrent.CITY;
-                                memberCBS.province = addressCurrent.STATE;
-                                memberCBS.zipCode = addressCurrent.ZIP_CODE;
-                                memberCBS.country = "Philippines";
+                                var contactMobileNo = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("M"))).FirstOrDefault();
+                                if (contactMobileNo != null) memberCBS.mobile_nos = contactMobileNo.MOBILE_CTY_CODE + contactMobileNo.MOBILE_PREFIX + contactMobileNo.MOBILE_NUMBER;
                             }
-                            else
-                            {
-                                //var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("P"))).FirstOrDefault();
-                                var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS==0)).FirstOrDefault();
+                            catch (Exception ex) { logger.Error(string.Concat("contactMobileNo(): ", memberCBS.cif,". ", ex.Message)); }
 
-                                if (addressPermanent != null)
+                            try
+                            {
+                                var contactEmail = cdsResponse.PersonalInfo.ContactList.Where(o => (o.CONTACT_TYPE.Equals("E"))).FirstOrDefault();
+                                if (contactEmail != null) memberCBS.email = contactEmail.CONTACT_VALUE;
+                            }
+                            catch (Exception ex) { logger.Error(string.Concat("contactEmail(): ", memberCBS.cif, ". ", ex.Message)); }
+
+
+                            try
+                            {
+                                var addressCurrent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS == 1)).FirstOrDefault();
+                                if (addressCurrent != null)
                                 {
-                                    memberCBS.address1 = addressPermanent.ADDRESS1;
-                                    memberCBS.address2 = addressPermanent.ADDRESS2;
-                                    memberCBS.address3 = addressPermanent.ADDRESS3 + " " + addressPermanent.ADDRESS4;
-                                    memberCBS.city = addressPermanent.CITY;
-                                    memberCBS.province = addressPermanent.STATE;
-                                    memberCBS.zipCode = addressPermanent.ZIP_CODE;
+                                    memberCBS.address1 = addressCurrent.ADDRESS1;
+                                    memberCBS.address2 = addressCurrent.ADDRESS2;
+                                    memberCBS.address3 = addressCurrent.ADDRESS3 + " " + addressCurrent.ADDRESS4;
+                                    memberCBS.city = addressCurrent.CITY;
+                                    memberCBS.province = addressCurrent.STATE;
+                                    memberCBS.zipCode = addressCurrent.ZIP_CODE;
                                     memberCBS.country = "Philippines";
                                 }
                                 else
                                 {
-                                    memberCBS.address1 = "";
-                                    memberCBS.address2 = "";
-                                    memberCBS.address3 = "";
-                                    memberCBS.city = "";
-                                    memberCBS.province = "";
-                                    memberCBS.zipCode = "";
-                                    memberCBS.country = "Philippines";
+                                    //var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.ADDRESS_TYPE.Equals("P"))).FirstOrDefault();
+                                    var addressPermanent = cdsResponse.PersonalInfo.AddressList.Where(o => (o.PREFERRED_ADDRESS == 0)).FirstOrDefault();
+
+                                    if (addressPermanent != null)
+                                    {
+                                        memberCBS.address1 = addressPermanent.ADDRESS1;
+                                        memberCBS.address2 = addressPermanent.ADDRESS2;
+                                        memberCBS.address3 = addressPermanent.ADDRESS3 + " " + addressPermanent.ADDRESS4;
+                                        memberCBS.city = addressPermanent.CITY;
+                                        memberCBS.province = addressPermanent.STATE;
+                                        memberCBS.zipCode = addressPermanent.ZIP_CODE;
+                                        memberCBS.country = "Philippines";
+                                    }
+                                    else
+                                    {
+                                        memberCBS.address1 = "";
+                                        memberCBS.address2 = "";
+                                        memberCBS.address3 = "";
+                                        memberCBS.city = "";
+                                        memberCBS.province = "";
+                                        memberCBS.zipCode = "";
+                                        memberCBS.country = "Philippines";
+                                    }
                                 }
                             }
+                            catch (Exception ex) { logger.Error(string.Concat("address(): ", memberCBS.cif, ". ", ex.Message)); }
+
 
                             memberCBS.emergency_contact_name = "";
                             memberCBS.emergency_contact_nos = memberCBS.contact_nos;
@@ -1921,10 +1943,10 @@ namespace accAfpslaiEmvSrvc.Controllers
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(string.Concat(ex.Message, ". ", ex.InnerException.Message));
                 return apiResponse(new responseFailedSystemError
                 {
-                    obj = ex.Message
+                    obj = string.Concat(ex.Message, ". ", ex.InnerException.Message)
                 });
             }
         }

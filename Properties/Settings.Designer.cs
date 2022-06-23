@@ -12,7 +12,7 @@ namespace accAfpslaiEmvSrvc.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Photo")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\AFPSLAI\\Photo")]
         public string PhotoRepo {
             get {
                 return ((string)(this["PhotoRepo"]));
@@ -34,7 +34,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Member Data")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\AFPSLAI\\Member Data")]
         public string MemberDataRepo {
             get {
                 return ((string)(this["MemberDataRepo"]));
@@ -61,7 +61,7 @@ namespace accAfpslaiEmvSrvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\WORK\\AFPSLAI\\Project April 2021\\SERVER\\Logs")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\AFPSLAI\\Logs")]
         public string LogRepo {
             get {
                 return ((string)(this["LogRepo"]));

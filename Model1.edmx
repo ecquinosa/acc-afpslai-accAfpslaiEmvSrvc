@@ -532,7 +532,7 @@
           <Property Name="time_post" Type="Time" Precision="6" />
           <Property Name="login_attmpt_ctr" Type="Int16" />
         </EntityType>
-        <EntityContainer Name="afpslai_emvEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="afpslai_emvEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="addresses" EntityType="Self.address" />
           <EntitySet Name="api_request_log" EntityType="Self.api_request_log" />
           <EntitySet Name="associate_type" EntityType="Self.associate_type" />
@@ -570,7 +570,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="afpslai_emvModelStoreContainer" CdmEntityContainer="afpslai_emvEntities">
+        <EntityContainerMapping StorageEntityContainer="afpslai_emvModelStoreContainer" CdmEntityContainer="afpslai_emvEntities1">
           <EntitySetMapping Name="addresses">
             <EntityTypeMapping TypeName="afpslai_emvModel.address">
               <MappingFragment StoreEntitySet="address">

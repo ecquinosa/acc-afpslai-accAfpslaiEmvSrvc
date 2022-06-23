@@ -1,0 +1,9 @@
+2022-06-23 09:26:51.5778|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 09:27:23.0300|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 09:43:41.3052|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 09:43:46.7578|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 09:46:49.5167|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 10:02:27.2268|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.ValidateLogIn|An error occurred while executing the command definition. See the inner exception for details.
+2022-06-23 12:04:55.1213|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData|Object reference not set to an instance of an object.
+2022-06-23 12:31:42.2366|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData|contactMobileNo(): Object reference not set to an instance of an object.
+2022-06-23 12:31:45.9362|ERROR|accAfpslaiEmvSrvc.Controllers.ValuesController.PullCBSData|contactEmail(): Object reference not set to an instance of an object.
